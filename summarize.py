@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import argparse
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -17,45 +18,45 @@ model = genai.GenerativeModel(
     }
 )
 
-def summarize_with_gemini(pdf_path, length="medium", focus=None):
+prompts = [
+    "日本語で要約してください。"
+]
+
+def summarize_with_gemini(pdf_path):
     """
     Generate a summary using Gemini AI.
     
     Args:
         pdf_path (str): Path to the PDF file
-        length (str): Length of summary (short/medium/long)
-        focus (str, optional): Specific focus area for summary
     
     Returns:
         str: Generated summary
     """
-    length_map = {
-        'short': 'Provide a concise 3-4 sentence summary.',
-        'medium': 'Provide a balanced summary of 5-7 sentences.',
-        'long': 'Provide a comprehensive summary covering key points in detail.'
-    }
     
-    prompt = f"{length_map.get(length, length_map['medium'])}\n"
-    if focus:
-        prompt += f"Focus specifically on: {focus}\n"
-    prompt += "Please read and summarize this academic paper."
-    
+    pdf_bn = os.path.splitext(os.path.basename(pdf_path))[0]
     file = None
+    result = ""
     try:
         file = genai.upload_file(pdf_path, mime_type="application/pdf")
         print(f"Uploaded file '{file.display_name}' as: {file.uri}")
         chat_session = model.start_chat(history=[
             {"role": "user", "parts": [file]}
         ])
-        response = chat_session.send_message(prompt)
-        return response.text
+        for i, prompt in enumerate(prompts, 1):
+            response = chat_session.send_message(prompt)
+            text = f"# Prompt {i}\n\n> {prompt}\n\n{response.text.rstrip()}\n"
+            with open(f"{pdf_bn}-{i}.md", "w", encoding="utf-8") as f:
+                f.write(text)
+            if i:
+                result += "\n"
+            result += text
     except Exception as e:
         print(f"Error generating summary: {e}")
-        return ""
     finally:
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
+    return result
 
 def main():
     """
@@ -78,12 +79,10 @@ def main():
     summary = summarize_with_gemini(args.pdf_path, args.length, args.focus)
     
     # Output summary
-    if args.output:
-        with open(args.output, 'w', encoding='utf-8') as f:
-            f.write(summary)
-        print(f"Summary saved to {args.output}")
-    else:
-        print(summary)
+    output = args.output or (os.path.splitext(os.path.basename(args.pdf_path))[0] + ".md")
+    with open(output, "w", encoding="utf-8") as f:
+        f.write(summary)
+    print(f"Summary saved: {output}")
 
 if __name__ == '__main__':
     main()
