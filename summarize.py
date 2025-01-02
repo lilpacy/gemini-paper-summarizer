@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-import os
-import argparse
-from dotenv import load_dotenv
-import google.generativeai as genai
+import os, argparse
 
 # Load environment variables
+from dotenv import load_dotenv
 load_dotenv()
 
+import google.generativeai as genai
 model = genai.GenerativeModel(
     model_name="models/gemini-2.0-flash-exp",
     generation_config={
@@ -19,7 +17,20 @@ model = genai.GenerativeModel(
 )
 
 prompts = [
-    "日本語で要約してください。"
+    "日本語で要約してください。",
+    """章構成を JSON で出力してください。例:
+```json
+[
+  {
+    "title": "Introduction",
+    "sub": [
+      {
+        "title": "Background"
+      }
+    ]
+  }
+]
+```""",
 ]
 
 def summarize_with_gemini(pdf_path):
@@ -33,21 +44,32 @@ def summarize_with_gemini(pdf_path):
         str: Generated summary
     """
     
-    pdf_bn = os.path.splitext(os.path.basename(pdf_path))[0]
+    pdf_fn = os.path.splitext(pdf_path)[0]
     file = None
+    chat_session = None
     result = ""
     try:
-        file = genai.upload_file(pdf_path, mime_type="application/pdf")
-        print(f"Uploaded file '{file.display_name}' as: {file.uri}")
-        chat_session = model.start_chat(history=[
-            {"role": "user", "parts": [file]}
-        ])
         for i, prompt in enumerate(prompts, 1):
-            response = chat_session.send_message(prompt)
-            text = f"# Prompt {i}\n\n> {prompt}\n\n{response.text.rstrip()}\n"
-            with open(f"{pdf_bn}-{i}.md", "w", encoding="utf-8") as f:
-                f.write(text)
-            if i:
+            md = f"{pdf_fn}-{i}.md"
+            if os.path.exists(md):
+                with open(md, "r", encoding="utf-8") as f:
+                    text = f.read()
+                print(f"Skipping existing file: {md}")
+            else:
+                if not file:
+                    file = genai.upload_file(pdf_path, mime_type="application/pdf")
+                    print(f"Uploaded file '{file.display_name}' as: {file.uri}")
+                    chat_session = model.start_chat(history=[
+                        {"role": "user", "parts": [file]}
+                    ])
+                response = chat_session.send_message(prompt)
+                text = f"# Prompt {i}\n\n"
+                for line in prompt.rstrip().split("\n"):
+                    text += f"> {line}\n"
+                text += f"\n{response.text.rstrip()}\n"
+                with open(md, "w", encoding="utf-8") as f:
+                    f.write(text)
+            if i > 1:
                 result += "\n"
             result += text
     except Exception as e:
@@ -56,7 +78,7 @@ def summarize_with_gemini(pdf_path):
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
-    return result
+    return result, pdf_fn + ".md"
 
 def main():
     """
@@ -64,23 +86,11 @@ def main():
     """
     parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini AI')
     parser.add_argument('pdf_path', help='Path to the PDF file')
-    parser.add_argument('-l', '--length', 
-                        choices=['short', 'medium', 'long'], 
-                        default='medium', 
-                        help='Length of summary')
-    parser.add_argument('-f', '--focus', 
-                        help='Specific focus area for summary')
-    parser.add_argument('-o', '--output', 
-                        help='Output file for summary')
-    
+    parser.add_argument('-o', '--output', help='Output file for summary')
     args = parser.parse_args()
-    
-    # Generate summary
-    summary = summarize_with_gemini(args.pdf_path, args.length, args.focus)
-    
-    # Output summary
-    output = args.output or (os.path.splitext(os.path.basename(args.pdf_path))[0] + ".md")
-    with open(output, "w", encoding="utf-8") as f:
+
+    summary, output = summarize_with_gemini(args.pdf_path)
+    with open(args.output or output, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"Summary saved: {output}")
 
