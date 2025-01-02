@@ -5,7 +5,7 @@ A command-line tool that uses Google's Gemini AI to generate summaries of academ
 
 ## Prerequisites
 - Python 3.10+
-- Gemini AI API Key (obtain from [Google AI Studio](https://aistudio.google.com/))
+- Gemini API Key (obtain from [Google AI Studio](https://aistudio.google.com/))
 
 ## Installation
 1. Clone the repository
@@ -20,7 +20,7 @@ A command-line tool that uses Google's Gemini AI to generate summaries of academ
 
 ## Usage
 ```bash
-python summarize.py path/to/paper.pdf [options]
+uv run summarize.py path/to/paper.pdf [options]
 ```
 
 ### Options

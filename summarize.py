@@ -40,7 +40,7 @@ def summarize_with_gemini(pdf_data, length='medium', focus=None):
     # Validate API key
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
-        print("Error: Google API key not found. Set GEMINI_API_KEY in .env file.")
+        print("Error: Gemini API key not found. Set GEMINI_API_KEY in .env file.")
         sys.exit(1)
 
     # Configure Gemini
