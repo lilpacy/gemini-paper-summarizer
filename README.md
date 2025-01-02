@@ -1,7 +1,7 @@
 # Gemini Paper Summarizer
 
 ## Overview
-A command-line tool that uses Google's Gemini AI to generate summaries of academic papers.
+A command-line tool that uses Gemini API to generate summaries of academic papers.
 
 ## Prerequisites
 - Python 3.10+
@@ -13,20 +13,30 @@ A command-line tool that uses Google's Gemini AI to generate summaries of academ
    ```
    uv sync
    ```
-3. Create a `.env` file with your Gemini API key:
-   ```
+3. Create a `.env` file in the project directory with your Gemini API key:
+   ```bash
    GEMINI_API_KEY=your_api_key_here
    ```
 
 ## Usage
 ```bash
-uv run summarize.py path/to/paper.pdf [options]
+uv run summarize.py path/to/paper.pdf
 ```
 
-### Options
-- `-l, --length`: Summary length (short, medium, long)
-- `-f, --focus`: Specific focus area of summary
-- `-o, --output`: Output file for summary
+The tool will generate several markdown files with different types of summaries:
+1. A Japanese summary of the entire paper
+2. A Japanese translation of the abstract
+3. A JSON structure of the paper's chapters and sections
+4. Individual summaries for each main section
+
+The output files will be named based on the input PDF filename with a numerical suffix (e.g., `paper-1.md`, `paper-2.md`, etc.).
+
+### Output Format
+For each prompt, the tool generates a markdown file containing:
+- The original prompt
+- The AI-generated response
+
+The section structure will be displayed in both JSON format and as a hierarchical list.
 
 ## License
-Creative Commons Zero v1.0 Universal (CC0 1.0)
+CC0 1.0 Universal
