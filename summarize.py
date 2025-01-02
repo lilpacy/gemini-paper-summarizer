@@ -1,55 +1,34 @@
 #!/usr/bin/env python3
 import argparse
-import os
-import sys
 from dotenv import load_dotenv
 import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
 
-def read_pdf_file(pdf_path):
-    """
-    Read PDF file as binary data
-    
-    Args:
-        pdf_path (str): Path to the PDF file
-    
-    Returns:
-        bytes: PDF file content
-    """
-    try:
-        with open(pdf_path, 'rb') as file:
-            return file.read()
-    except Exception as e:
-        print(f"Error reading PDF file: {e}")
-        sys.exit(1)
+model = genai.GenerativeModel(
+    model_name="models/gemini-2.0-flash-exp",
+    generation_config={
+        "temperature": 0.5,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": 8192,
+        "response_mime_type": "text/plain",
+    }
+)
 
-def summarize_with_gemini(pdf_data, length='medium', focus=None):
+def summarize_with_gemini(pdf_path, length="medium", focus=None):
     """
     Generate a summary using Gemini AI.
     
     Args:
-        pdf_data (bytes): PDF file content
+        pdf_path (str): Path to the PDF file
         length (str): Length of summary (short/medium/long)
         focus (str, optional): Specific focus area for summary
     
     Returns:
         str: Generated summary
     """
-    # Validate API key
-    api_key = os.getenv('GEMINI_API_KEY')
-    if not api_key:
-        print("Error: Gemini API key not found. Set GEMINI_API_KEY in .env file.")
-        sys.exit(1)
-
-    # Configure Gemini
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(
-        model_name="models/gemini-2.0-flash-exp",
-    )
-    
-    # Construct prompt
     length_map = {
         'short': 'Provide a concise 3-4 sentence summary.',
         'medium': 'Provide a balanced summary of 5-7 sentences.',
@@ -61,12 +40,22 @@ def summarize_with_gemini(pdf_data, length='medium', focus=None):
         prompt += f"Focus specifically on: {focus}\n"
     prompt += "Please read and summarize this academic paper."
     
+    file = None
     try:
-        response = model.generate_content([prompt, pdf_data])
+        file = genai.upload_file(pdf_path, mime_type="application/pdf")
+        print(f"Uploaded file '{file.display_name}' as: {file.uri}")
+        chat_session = model.start_chat(history=[
+            {"role": "user", "parts": [file]}
+        ])
+        response = chat_session.send_message(prompt)
         return response.text
     except Exception as e:
         print(f"Error generating summary: {e}")
-        sys.exit(1)
+        return ""
+    finally:
+        if file:
+            genai.delete_file(file.name)
+            print(f"Deleted file '{file.display_name}' from: {file.uri}")
 
 def main():
     """
@@ -85,11 +74,8 @@ def main():
     
     args = parser.parse_args()
     
-    # Read PDF file
-    pdf_data = read_pdf_file(args.pdf_path)
-    
     # Generate summary
-    summary = summarize_with_gemini(pdf_data, args.length, args.focus)
+    summary = summarize_with_gemini(args.pdf_path, args.length, args.focus)
     
     # Output summary
     if args.output:
