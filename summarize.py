@@ -17,7 +17,7 @@ model = genai.GenerativeModel(
 )
 
 prompts = [
-    "日本語で要約してください。",
+    "日本語で要約してください。箇条書きではなく文章で書いてください。",
     "Abstract を日本語に翻訳してください。",
     """章構成を JSON で出力してください。例:
 ```json
@@ -33,6 +33,7 @@ prompts = [
 ]
 ```""",
 ]
+sprompt = "セクション「%s」をサブセクションも含めて要約してください。箇条書きではなく文章で書いてください。"
 
 def summarize_with_gemini(pdf_path):
     """
@@ -57,33 +58,44 @@ def summarize_with_gemini(pdf_path):
             if i <= len(prompts):
                 prompt = prompts[i - 1]
             elif (j := i - len(prompts) - 1) < len(sections):
-                prompt = f"セクション「{sections[j]['title']}」をサブセクションも含めて要約してください。"
+                prompt = sprompt % sections[j]["title"]
             else:
                 break
             md = f"{pdf_fn}-{i}.md"
             if os.path.exists(md):
+                print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
                     text = f.read()
-                print(f"Skipping existing file: {md}")
+                if i == len(prompts):
+                    json_data = text.split("```json")[2].split("```")[0]
+                    sections = json.loads(json_data)
             else:
                 if not file:
                     file = genai.upload_file(pdf_path, mime_type="application/pdf")
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
-                    chat_session = model.start_chat(history=[
-                        {"role": "user", "parts": [file]}
-                    ])
                 plines = prompt.rstrip().split("\n")
                 print(f"Prompt {i}: {plines[0]}")
+                chat_session = model.start_chat(history=[
+                    {"role": "user", "parts": [file]}
+                ])
                 response = chat_session.send_message(prompt)
                 text = f"# Prompt {i}\n\n"
                 for line in plines:
                     text += f"> {line}\n"
                 text += f"\n{response.text.rstrip()}\n"
+                if i == len(prompts):
+                    json_data = response.text.split("```json")[1].split("```")[0]
+                    sections = json.loads(json_data)
+                    text += "\n"
+                    def f(sections, indent=0):
+                        nonlocal text
+                        for section in sections:
+                            text += ("  " * indent) + "- " + section["title"] + "\n"
+                            if "sub" in section:
+                                f(section["sub"], indent + 1)
+                    f(sections)
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
-            if i == len(prompts):
-                json_data = text.split("```json")[2].split("```")[0]
-                sections = json.loads(json_data)
             if i > 1:
                 result += "\n"
             result += text
