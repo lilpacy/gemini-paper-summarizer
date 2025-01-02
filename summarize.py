@@ -1,4 +1,4 @@
-import os, argparse
+import sys, os, argparse, json
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -18,6 +18,7 @@ model = genai.GenerativeModel(
 
 prompts = [
     "日本語で要約してください。",
+    "Abstract を日本語に翻訳してください。",
     """章構成を JSON で出力してください。例:
 ```json
 [
@@ -48,8 +49,17 @@ def summarize_with_gemini(pdf_path):
     file = None
     chat_session = None
     result = ""
+    i = 0
+    sections = []
     try:
-        for i, prompt in enumerate(prompts, 1):
+        while True:
+            i += 1
+            if i <= len(prompts):
+                prompt = prompts[i - 1]
+            elif (j := i - len(prompts) - 1) < len(sections):
+                prompt = f"セクション「{sections[j]['title']}」をサブセクションも含めて要約してください。"
+            else:
+                break
             md = f"{pdf_fn}-{i}.md"
             if os.path.exists(md):
                 with open(md, "r", encoding="utf-8") as f:
@@ -62,18 +72,23 @@ def summarize_with_gemini(pdf_path):
                     chat_session = model.start_chat(history=[
                         {"role": "user", "parts": [file]}
                     ])
+                plines = prompt.rstrip().split("\n")
+                print(f"Prompt {i}: {plines[0]}")
                 response = chat_session.send_message(prompt)
                 text = f"# Prompt {i}\n\n"
-                for line in prompt.rstrip().split("\n"):
+                for line in plines:
                     text += f"> {line}\n"
                 text += f"\n{response.text.rstrip()}\n"
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
+            if i == len(prompts):
+                json_data = text.split("```json")[2].split("```")[0]
+                sections = json.loads(json_data)
             if i > 1:
                 result += "\n"
             result += text
     except Exception as e:
-        print(f"Error generating summary: {e}")
+        print(f"Error generating summary at line {sys.exc_info()[2].tb_lineno}: {e}")
     finally:
         if file:
             genai.delete_file(file.name)
