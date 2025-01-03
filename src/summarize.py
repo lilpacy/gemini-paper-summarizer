@@ -5,16 +5,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import google.generativeai as genai
-model = genai.GenerativeModel(
-    model_name="models/gemini-2.0-flash-exp",
-    generation_config={
-        "temperature": 0.5,
-        "top_p": 0.95,
-        "top_k": 40,
-        "max_output_tokens": 8192,
-        "response_mime_type": "text/plain",
-    }
-)
+
+model_name = "gemini-1.5-flash-002"
+generation_config = {
+    "temperature": 0.5,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+
+system_instruction = "You are an expert at analyzing and summarizing academic papers. Please only return the results, and do not include any comments."
 
 prompts = [
     "日本語で要約してください。箇条書きではなく文章で書いてください。",
@@ -33,22 +34,12 @@ prompts = [
 ]
 ```""",
 ]
-sprompt = "セクション「%s」をサブセクションも含めて要約してください。箇条書きではなく文章で書いてください。"
+sprompt = "セクション「%s」をサブセクションも含めて日本語で要約してください。箇条書きではなく文章で書いてください。"
 
-def summarize_with_gemini(pdf_path):
-    """
-    Generate a summary using Gemini AI.
-    
-    Args:
-        pdf_path (str): Path to the PDF file
-    
-    Returns:
-        str: Generated summary
-    """
-    
+def summarize_with_gemini(pdf_path, use_cache=False):
     pdf_fn = os.path.splitext(pdf_path)[0]
     file = None
-    chat_session = None
+    cache = None
     result = ""
     i = 0
     sections = []
@@ -73,12 +64,25 @@ def summarize_with_gemini(pdf_path):
                 if not file:
                     file = genai.upload_file(pdf_path, mime_type="application/pdf")
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
+                    if use_cache:
+                        cache = genai.caching.CachedContent.create(
+                            model=model_name,
+                            system_instruction=system_instruction,
+                            contents=[file],
+                        )
                 plines = prompt.rstrip().split("\n")
                 print(f"Prompt {i}: {plines[0]}")
-                chat_session = model.start_chat(history=[
-                    {"role": "user", "parts": [file]}
-                ])
-                response = chat_session.send_message(prompt)
+                if cache:
+                    model = genai.GenerativeModel.from_cached_content(cache)
+                    model.generation_config = generation_config
+                    response = model.generate_content(prompt)
+                else:
+                    model = genai.GenerativeModel(
+                        model_name=model_name,
+                        generation_config=generation_config,
+                        system_instruction=system_instruction,
+                    )
+                    response = model.generate_content([file, prompt])
                 text = f"# Prompt {i}\n\n"
                 for line in plines:
                     text += f"> {line}\n"
@@ -102,15 +106,14 @@ def summarize_with_gemini(pdf_path):
     except Exception as e:
         print(f"Error generating summary at line {sys.exc_info()[2].tb_lineno}: {e}")
     finally:
+        if cache:
+            cache.delete()
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
     return result, pdf_fn + ".md"
 
 def main():
-    """
-    Main CLI entry point for paper summarization.
-    """
     parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini AI')
     parser.add_argument('pdf_path', help='Path to the PDF file')
     parser.add_argument('-o', '--output', help='Output file for summary')
