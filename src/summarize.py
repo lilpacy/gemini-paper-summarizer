@@ -24,10 +24,10 @@ prompts = [
 ```json
 [
   {
-    "title": "Introduction",
+    "title": "1 Introduction",
     "sub": [
       {
-        "title": "Background"
+        "title": "1.1 Background"
       }
     ]
   }
@@ -65,13 +65,17 @@ def summarize_with_gemini(pdf_path, use_cache=False):
                     file = genai.upload_file(pdf_path, mime_type="application/pdf")
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
                     if use_cache:
+                        print("Caching file...")
                         cache = genai.caching.CachedContent.create(
                             model=model_name,
                             system_instruction=system_instruction,
                             contents=[file],
                         )
                 plines = prompt.rstrip().split("\n")
-                print(f"Prompt {i}: {plines[0]}")
+                if sections:
+                    print(f"Prompt {i}/{len(prompts) + len(sections)}: {plines[0]}")
+                else:
+                    print(f"Prompt {i}: {plines[0]}")
                 if cache:
                     model = genai.GenerativeModel.from_cached_content(cache)
                     model.generation_config = generation_config
