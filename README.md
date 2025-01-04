@@ -6,17 +6,17 @@ A command-line tool that uses Gemini API to generate summaries of academic paper
 
 Note: Currently, the output is in Japanese only.
 
-## Prerequisites
-
-- Python 3.10+
-- Gemini API Key (obtain from [Google AI Studio](https://aistudio.google.com/))
-
 ## Examples
 
 Note: The following examples are in Japanese.
 
 - [Attention Is All You Need](https://7shi.hateblo.jp/entry/2025/01/04/204353)
 - [Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
+
+## Prerequisites
+
+- Python 3.10+
+- Gemini API Key (obtain from [Google AI Studio](https://aistudio.google.com/))
 
 ## Installation
 
@@ -37,6 +37,7 @@ uv run gp-summarize path/to/paper.pdf
 ```
 
 The tool will generate several markdown files with different types of summaries:
+
 1. A Japanese translation of the abstract
 2. A Japanese summary of the entire paper
 3. A JSON structure of the paper's chapters and sections
@@ -47,6 +48,7 @@ The output files will be named based on the input PDF filename with a numerical 
 ### Output Format
 
 For each prompt, the tool generates a markdown file containing:
+
 - The original prompt
 - The AI-generated response
 
