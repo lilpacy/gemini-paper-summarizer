@@ -4,6 +4,8 @@
 
 A command-line tool that uses Gemini API to generate summaries of academic papers.
 
+Note: Currently, the output is in Japanese only.
+
 ## Prerequisites
 
 - Python 3.10+
