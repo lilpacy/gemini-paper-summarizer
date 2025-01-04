@@ -17,14 +17,18 @@ model = genai.GenerativeModel(
     },
     system_instruction=" ".join([
         "You are an expert at analyzing and summarizing academic papers.",
+        "Please use $TeX$ to write mathematical equations.",
         "Please only return the results, and do not include any comments.",
     ]),
 )
 
 prompts = [
-    "日本語で要約してください。箇条書きではなく文章で書いてください。",
-    "Abstract を日本語に翻訳してください。",
-    """章構成を JSON で出力してください。例:
+    ("# Abstract", "論文の最初にあるAbstractを日本語に翻訳してください。"),
+    ("# 概要", "日本語で、一行の文章で要約してください。"),
+    ("## 問題意識", "論文はどのような問題を解決しようとしていますか？日本語で回答してください。"),
+    ("## 手法", "論文はどのような手法を提案していますか？日本語で回答してください。"),
+    ("## 新規性", "論文はどのような新規性がありますか？日本語で回答してください。"),
+    ("# 章構成", """章構成を JSON の配列で出力してください。例:
 ```json
 [
   "1 Introduction",
@@ -33,9 +37,9 @@ prompts = [
   "2.1 Data",
   "2.1.1 Dataset"
 ]
-```""",
+```"""),
 ]
-sprompt = "セクション「%s」をサブセクションも含めて日本語で要約してください。箇条書きではなく文章で書いてください。"
+sprompt = "セクション「%s」を日本語で要約してください。"
 
 class Section:
     def __init__(self, title=""):
@@ -57,6 +61,12 @@ class Section:
         sio = io.StringIO()
         self.show(file=sio)
         return sio.getvalue()
+
+    def flatten(self):
+        sections = [self.title]
+        for child in self.children:
+            sections += child.flatten()
+        return sections
 
     def append(self, titles):
         last_child = self.children[-1] if self.children else None
@@ -81,9 +91,11 @@ def summarize_with_gemini(pdf_path):
         while True:
             i += 1
             if i <= len(prompts):
-                prompt = prompts[i - 1]
+                title = prompts[i - 1][0]
+                prompt = prompts[i - 1][1]
             elif (j := i - len(prompts) - 1) < seclen:
-                prompt = sprompt % sections.children[j].title
+                title = "## " + sections.children[j].title
+                prompt = sprompt % "」「".join(sections.children[j].flatten())
             else:
                 break
             md = f"{pdf_fn}-{i}.md"
@@ -95,31 +107,49 @@ def summarize_with_gemini(pdf_path):
                     json_str = text.split("```json")[2].split("```")[0]
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
+                lines = text.rstrip().splitlines()
+                k = -1
+                for j, line in enumerate(lines):
+                    if line.startswith("> "):
+                        k = j
+                    elif k >= 0:
+                        break
+                k += 1
+                while k < len(lines) and not lines[k]:
+                    k += 1
+                rtext = "\n".join(lines[k:]) + "\n"
             else:
                 if not file:
                     file = genai.upload_file(pdf_path, mime_type="application/pdf")
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
-                plines = prompt.rstrip().split("\n")
+                plines = prompt.rstrip().splitlines()
                 if seclen:
                     print(f"Prompt {i}/{len(prompts) + seclen}: {plines[0]}")
                 else:
                     print(f"Prompt {i}: {plines[0]}")
-                response = model.generate_content([file, prompt])
+                response = model.generate_content([file, prompt], stream=True)
                 text = f"# Prompt {i}\n\n"
                 for line in plines:
                     text += f"> {line}\n"
-                text += f"\n{response.text.rstrip()}\n"
+                rtext = ""
+                for chunk in response:
+                    chunk_text = chunk.text
+                    print(chunk_text, end="", flush=True)
+                    rtext += chunk_text
+                if not rtext.endswith("\n"):
+                    print(flush=True)
+                rtext = rtext.rstrip() + "\n"
                 if i == len(prompts):
-                    json_str = response.text.split("```json")[1].split("```")[0]
+                    json_str = rtext.split("```json")[1].split("```")[0]
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
-                    text += "\n"
-                    text += str(sections)
+                    rtext += "\n" + str(sections)
+                text += "\n" + rtext
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
             if i > 1:
                 result += "\n"
-            result += text
+            result += title + "\n\n" + rtext
     except Exception as e:
         print(f"Error generating summary at line {sys.exc_info()[2].tb_lineno}: {e}")
     finally:
