@@ -127,11 +127,11 @@ def summarize_with_gemini(pdf_path):
                     print(f"Prompt {i}/{len(prompts) + seclen}: {plines[0]}")
                 else:
                     print(f"Prompt {i}: {plines[0]}")
-                response = model.generate_content([file, prompt], stream=True)
                 text = f"# Prompt {i}\n\n"
                 for line in plines:
                     text += f"> {line}\n"
                 rtext = ""
+                response = model.generate_content([file, prompt], stream=True)
                 for chunk in response:
                     chunk_text = chunk.text
                     print(chunk_text, end="", flush=True)
@@ -165,7 +165,9 @@ def main():
     args = parser.parse_args()
 
     summary, output = summarize_with_gemini(args.pdf_path)
-    with open(args.output or output, "w", encoding="utf-8") as f:
+    if args.output:
+        output = args.output
+    with open(output, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"Summary saved: {output}")
 
