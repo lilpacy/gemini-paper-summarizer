@@ -20,7 +20,7 @@ A command-line tool that uses Gemini API to generate summaries of academic paper
 
 ## Usage
 ```bash
-uv run summarize.py path/to/paper.pdf
+uv run gp-summarize path/to/paper.pdf
 ```
 
 The tool will generate several markdown files with different types of summaries:
