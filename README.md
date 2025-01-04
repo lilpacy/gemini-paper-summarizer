@@ -24,8 +24,8 @@ uv run gp-summarize path/to/paper.pdf
 ```
 
 The tool will generate several markdown files with different types of summaries:
-1. A Japanese summary of the entire paper
-2. A Japanese translation of the abstract
+1. A Japanese translation of the abstract
+2. A Japanese summary of the entire paper
 3. A JSON structure of the paper's chapters and sections
 4. Individual summaries for each main section
 
