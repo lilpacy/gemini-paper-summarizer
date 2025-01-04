@@ -103,7 +103,7 @@ def summarize_with_gemini(pdf_path):
                 print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
                     text = f.read()
-                if i == len(prompts):
+                if i == len(prompts) and "```json" in text:
                     json_str = text.split("```json")[2].split("```")[0]
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
@@ -139,7 +139,7 @@ def summarize_with_gemini(pdf_path):
                 if not rtext.endswith("\n"):
                     print(flush=True)
                 rtext = rtext.rstrip() + "\n"
-                if i == len(prompts):
+                if i == len(prompts) and "```json" in rtext:
                     json_str = rtext.split("```json")[1].split("```")[0]
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
