@@ -47,7 +47,7 @@ class Section:
         self.num = title.split(" ")[0]
         self.parent = None
         self.children = []
-      
+
     def is_parent(self, section):
         return section.num.startswith(self.num + ".")
 
