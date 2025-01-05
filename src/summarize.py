@@ -166,6 +166,14 @@ def summarize_with_gemini(pdf_path, output):
                     os.mkdir(output_dir)
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
+
+            # Remove JSON from the section structure
+            if i == len(prompts) and (json_start := rtext.find("```json")) >= 0:
+                if (json_end := rtext.find("```", json_start + 7)) >= 0:
+                    if (section_start := rtext.find("\n\n", json_end)) >= 0:
+                        rtext = rtext[section_start+2:]
+
+            # Add to the result
             if i > 1:
                 result += "\n"
             result += title + "\n\n" + rtext
