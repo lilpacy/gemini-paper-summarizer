@@ -1,4 +1,5 @@
-import sys, os, argparse, json, io, re
+import sys, os, argparse, json, io, re, time, math
+from datetime import datetime
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -80,6 +81,20 @@ class Section:
             section.parent = self
             last_child = section
 
+timestamps = []
+rpm = 10
+interval = 60 + 1 # including margin
+
+def generate_content(*args):
+    if len(timestamps) >= rpm:
+        t = timestamps[-rpm]
+        if (td := (datetime.now() - t).total_seconds()) < interval:
+            wait = math.ceil(interval - td)
+            print(f"Waiting {wait} seconds...")
+            time.sleep(wait)
+    timestamps.append(datetime.now())
+    return model.generate_content(args, stream=True)
+
 def summarize_with_gemini(pdf_path):
     pdf_fn = os.path.splitext(pdf_path)[0]
     file = None
@@ -133,7 +148,7 @@ def summarize_with_gemini(pdf_path):
                 else:
                     print(f"Prompt {i}: {plines[0]}")
                 rtext = ""
-                response = model.generate_content([file, prompt], stream=True)
+                response = generate_content(file, prompt)
                 for chunk in response:
                     chunk_text = chunk.text
                     print(chunk_text, end="", flush=True)
