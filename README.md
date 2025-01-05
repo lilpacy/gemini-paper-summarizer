@@ -41,9 +41,12 @@ The tool will generate several markdown files with different types of summaries:
 1. A Japanese translation of the abstract
 2. A Japanese summary of the entire paper
 3. A JSON structure of the paper's chapters and sections
-4. Individual summaries for each main section
+4. Individual summaries (not translations) for each main section
+5. Summaries of 1-4 above combined into a single file
 
-The output files will be named based on the input PDF filename with a numerical suffix (e.g., `paper-1.md`, `paper-2.md`, etc.).
+The output files will be named based on the input PDF filename. 1-4 will be named with a continuous number (e.g., `paper-1.md`, `paper-2.md`, etc.). The combined file will be named `paper.md`.
+
+Note: If the process is interrupted (e.g. by Ctrl+C or by a 429 rate limit error, etc.), the process can be re-run smoothly, because any existing output files will be skipped.
 
 ### Output Format
 
@@ -53,8 +56,6 @@ For each prompt, the tool generates a markdown file containing:
 - The AI-generated response
 
 The section structure will be displayed in both JSON format and as a hierarchical list.
-
-Finally, the tool generates a combined markdown file.
 
 ## License
 
