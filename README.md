@@ -12,6 +12,7 @@ Note: The following examples are in Japanese.
 
 - [Attention Is All You Need](https://7shi.hateblo.jp/entry/2025/01/04/204353)
 - [Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
+- [Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
 
 ## Prerequisites
 
