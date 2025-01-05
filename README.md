@@ -52,8 +52,10 @@ Note: If the process is interrupted (e.g. by Ctrl+C or by a 429 rate limit error
 
 For each prompt, the tool generates a markdown file containing:
 
-- The original prompt
-- The AI-generated response
+- Title (prompt number)
+- Statistics information about tokens
+- Prompt
+- AI-generated response
 
 The section structure will be displayed in both JSON format and as a hierarchical list.
 

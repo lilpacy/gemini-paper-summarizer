@@ -1,4 +1,4 @@
-import sys, os, argparse, json, io
+import sys, os, argparse, json, io, re
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -87,6 +87,7 @@ def summarize_with_gemini(pdf_path):
     i = 0
     sections = Section()
     seclen = 0
+    stats = {}
     try:
         while True:
             i += 1
@@ -112,7 +113,11 @@ def summarize_with_gemini(pdf_path):
                 for j, line in enumerate(lines):
                     if line.startswith("> "):
                         k = j
-                    elif k >= 0:
+                    elif k < 0:
+                        if m := re.match(r"^([a-zA-Z_]+): ([0-9]+)", line):
+                            stats.setdefault(m.group(1), 0)
+                            stats[m.group(1)] += int(m.group(2))
+                    else:
                         break
                 k += 1
                 while k < len(lines) and not lines[k]:
@@ -127,9 +132,6 @@ def summarize_with_gemini(pdf_path):
                     print(f"Prompt {i}/{len(prompts) + seclen}: {plines[0]}")
                 else:
                     print(f"Prompt {i}: {plines[0]}")
-                text = f"# Prompt {i}\n\n"
-                for line in plines:
-                    text += f"> {line}\n"
                 rtext = ""
                 response = model.generate_content([file, prompt], stream=True)
                 for chunk in response:
@@ -144,6 +146,17 @@ def summarize_with_gemini(pdf_path):
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
                     rtext += "\n" + str(sections)
+                text = f"# Prompt {i}\n\n"
+                chunk_dict = chunk.to_dict()
+                if "usage_metadata" in chunk_dict:
+                    for k, v in chunk_dict["usage_metadata"].items():
+                        stats.setdefault(k, 0)
+                        stats[k] += v
+                        text += f"{k}: {v}\n"
+                        print(f"{k}: {v}")
+                text += "\n"
+                for line in plines:
+                    text += f"> {line}\n"
                 text += "\n" + rtext
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
@@ -156,20 +169,23 @@ def summarize_with_gemini(pdf_path):
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
-    return result, pdf_fn + ".md"
+    return result, pdf_fn + ".md", stats
 
 def main():
-    parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini AI')
+    parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini API')
     parser.add_argument('pdf_path', help='Path to the PDF file')
     parser.add_argument('-o', '--output', help='Output file for summary')
     args = parser.parse_args()
 
-    summary, output = summarize_with_gemini(args.pdf_path)
+    summary, output, stats = summarize_with_gemini(args.pdf_path)
     if args.output:
         output = args.output
     with open(output, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"Summary saved: {output}")
+    print("Statistics:")
+    for k, v in stats.items():
+        print(f"- {k}: {v}")
 
 if __name__ == '__main__':
     main()
