@@ -5,8 +5,10 @@ import sys, io
 
 class Section:
     def __init__(self, title=""):
-        self.title = title
-        self.num = title.split(" ")[0]
+        self.title = title.strip()
+        self.num = self.title.split(" ")[0]
+        while self.num.endswith("."):
+            self.num = self.num[:-1]
         self.parent = None
         self.children = []
 
