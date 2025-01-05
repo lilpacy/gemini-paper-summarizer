@@ -21,11 +21,12 @@ model = genai.GenerativeModel(
         "max_output_tokens": 8192,
         "response_mime_type": "text/plain",
     },
-    system_instruction=" ".join([
-        "You are an expert at analyzing and summarizing academic papers.",
-        "Please use $TeX$ to write mathematical equations.",
-        "Please only return the results, and do not include any comments.",
-    ]),
+    system_instruction="""
+You are an expert at analyzing and summarizing academic papers.
+Please use $TeX$ to write mathematical equations.
+Please only return the results, and do not include any comments.
+日本語は「だ・である調」を使用してください。
+""".strip(),
 )
 
 prompts = [
@@ -34,7 +35,7 @@ prompts = [
     ("## 問題意識", "論文はどのような問題を解決しようとしていますか？日本語で回答してください。"),
     ("## 手法", "論文はどのような手法を提案していますか？日本語で回答してください。"),
     ("## 新規性", "論文はどのような新規性がありますか？日本語で回答してください。"),
-    ("# 章構成", """章構成を JSON の配列で出力してください。例:
+    ("# 章構成", """章構成を翻訳せずにJSONの配列で出力してください。例:
 ```json
 [
   "1 Introduction",
