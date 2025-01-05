@@ -1,5 +1,5 @@
 import json, io
-from src.summarize import Section
+from src.section import Section
 
 def test(name, json_str, expected):
     root = Section()
