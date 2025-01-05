@@ -44,7 +44,7 @@ The tool will generate several markdown files with different types of summaries:
 4. Individual summaries (not translations) for each main section
 5. Summaries of 1-4 above combined into a single file
 
-The output files will be named based on the input PDF filename. 1-4 will be named with a continuous number (e.g., `paper-1.md`, `paper-2.md`, etc.). The combined file will be named `paper.md`.
+The output files will be named based on the input PDF filename. Files 1-4 above will be saved in a directory and numbered continuously (e.g., `paper/001.md`, `paper/002.md`, etc.). The combined file will be named `paper.md`.
 
 Note: If the process is interrupted (e.g. by Ctrl+C or by a 429 rate limit error, etc.), the process can be re-run smoothly, because any existing output files will be skipped.
 

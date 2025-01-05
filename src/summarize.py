@@ -99,7 +99,7 @@ def summarize_with_gemini(pdf_path):
                 prompt = sprompt % "」「".join(sections.children[j].flatten())
             else:
                 break
-            md = f"{pdf_fn}-{i}.md"
+            md = f"{pdf_fn}/{i:03d}.md"
             if os.path.exists(md):
                 print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
@@ -158,6 +158,8 @@ def summarize_with_gemini(pdf_path):
                 for line in plines:
                     text += f"> {line}\n"
                 text += "\n" + rtext
+                if not os.path.exists(pdf_fn):
+                    os.mkdir(pdf_fn)
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
             if i > 1:
