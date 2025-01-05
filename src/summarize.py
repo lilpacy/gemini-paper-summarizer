@@ -60,8 +60,14 @@ def generate_content(*args):
     timestamps.append(datetime.now())
     return model.generate_content(args, stream=True)
 
-def summarize_with_gemini(pdf_path):
-    pdf_fn = os.path.splitext(pdf_path)[0]
+def summarize_with_gemini(pdf_path, output):
+    if output:
+        output_dir, ext = os.path.splitext(output)
+        if not ext:
+            output += ".md"
+    else:
+        output_dir = os.path.splitext(pdf_path)[0]
+        output = output_dir + ".md"
     file = None
     result = ""
     i = 0
@@ -79,7 +85,7 @@ def summarize_with_gemini(pdf_path):
                 prompt = sprompt[0] % sprompt[1].join(sections.children[j].flatten())
             else:
                 break
-            md = f"{pdf_fn}/{i:03d}.md"
+            md = os.path.join(output_dir, f"{i:03d}.md")
             if os.path.exists(md):
                 print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
@@ -155,8 +161,8 @@ def summarize_with_gemini(pdf_path):
                 text += "\n" + rtext
 
                 # Save the file
-                if not os.path.exists(pdf_fn):
-                    os.mkdir(pdf_fn)
+                if not os.path.exists(output_dir):
+                    os.mkdir(output_dir)
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
             if i > 1:
@@ -166,7 +172,7 @@ def summarize_with_gemini(pdf_path):
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
-    return result, pdf_fn + ".md", stats
+    return result, output, stats
 
 def main():
     parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini API')
@@ -174,9 +180,7 @@ def main():
     parser.add_argument('-o', '--output', help='Output file for summary')
     args = parser.parse_args()
 
-    summary, output, stats = summarize_with_gemini(args.pdf_path)
-    if args.output:
-        output = args.output
+    summary, output, stats = summarize_with_gemini(args.pdf_path, args.output)
     with open(output, "w", encoding="utf-8") as f:
         f.write(summary)
     print(f"Summary saved: {output}")
