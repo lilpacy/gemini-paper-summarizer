@@ -163,8 +163,6 @@ def summarize_with_gemini(pdf_path):
             if i > 1:
                 result += "\n"
             result += title + "\n\n" + rtext
-    except Exception as e:
-        print(f"Error generating summary at line {sys.exc_info()[2].tb_lineno}: {e}")
     finally:
         if file:
             genai.delete_file(file.name)
