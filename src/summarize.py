@@ -7,6 +7,8 @@ load_dotenv()
 
 import google.generativeai as genai
 
+max_rpm = 10 # maximum requests per minute
+
 model = genai.GenerativeModel(
     model_name="models/gemini-2.0-flash-exp",
     generation_config={
@@ -40,8 +42,9 @@ prompts = [
 ]
 ```"""),
 ]
-sprompt = "セクション「%s」を日本語で要約してください。"
+sprompt = ("セクション「%s」を日本語で要約してください。", "」「")
 
+# A class to handle the section structure in a hierarchical way
 class Section:
     def __init__(self, title=""):
         self.title = title
@@ -82,12 +85,12 @@ class Section:
             last_child = section
 
 timestamps = []
-rpm = 10
-interval = 60 + 1 # including margin
+interval = 60 + 5 # interval with margin
 
+# Limit the number of requests per minute
 def generate_content(*args):
-    if len(timestamps) >= rpm:
-        t = timestamps[-rpm]
+    if len(timestamps) >= max_rpm:
+        t = timestamps[-max_rpm]
         if (td := (datetime.now() - t).total_seconds()) < interval:
             wait = math.ceil(interval - td)
             print(f"Waiting {wait} seconds...")
@@ -111,7 +114,7 @@ def summarize_with_gemini(pdf_path):
                 prompt = prompts[i - 1][1]
             elif (j := i - len(prompts) - 1) < seclen:
                 title = "## " + sections.children[j].title
-                prompt = sprompt % "」「".join(sections.children[j].flatten())
+                prompt = sprompt[0] % sprompt[1].join(sections.children[j].flatten())
             else:
                 break
             md = f"{pdf_fn}/{i:03d}.md"
@@ -119,11 +122,15 @@ def summarize_with_gemini(pdf_path):
                 print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
                     text = f.read()
+
+                # Get the section structure
                 if i == len(prompts) and "```json" in text:
                     json_str = text.split("```json")[2].split("```")[0]
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
                 lines = text.rstrip().splitlines()
+
+                # Get the statistics and the response
                 k = -1
                 for j, line in enumerate(lines):
                     if line.startswith("> "):
@@ -139,14 +146,20 @@ def summarize_with_gemini(pdf_path):
                     k += 1
                 rtext = "\n".join(lines[k:]) + "\n"
             else:
+                # Upload the file
                 if not file:
                     file = genai.upload_file(pdf_path, mime_type="application/pdf")
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
+
+                # Prepare the prompt
                 plines = prompt.rstrip().splitlines()
+                text = f"# Prompt {i}\n\n"
                 if seclen:
                     print(f"Prompt {i}/{len(prompts) + seclen}: {plines[0]}")
                 else:
                     print(f"Prompt {i}: {plines[0]}")
+
+                # Get the response
                 rtext = ""
                 response = generate_content(file, prompt)
                 for chunk in response:
@@ -156,12 +169,15 @@ def summarize_with_gemini(pdf_path):
                 if not rtext.endswith("\n"):
                     print(flush=True)
                 rtext = rtext.rstrip() + "\n"
+
+                # Get the section structure
                 if i == len(prompts) and "```json" in rtext:
                     json_str = rtext.split("```json")[1].split("```")[0]
                     sections.append(json.loads(json_str))
                     seclen = len(sections.children)
                     rtext += "\n" + str(sections)
-                text = f"# Prompt {i}\n\n"
+
+                # Get the statistics
                 chunk_dict = chunk.to_dict()
                 if "usage_metadata" in chunk_dict:
                     for k, v in chunk_dict["usage_metadata"].items():
@@ -170,9 +186,13 @@ def summarize_with_gemini(pdf_path):
                         text += f"{k}: {v}\n"
                         print(f"{k}: {v}")
                 text += "\n"
+
+                # Add the prompt and response
                 for line in plines:
                     text += f"> {line}\n"
                 text += "\n" + rtext
+
+                # Save the file
                 if not os.path.exists(pdf_fn):
                     os.mkdir(pdf_fn)
                 with open(md, "w", encoding="utf-8") as f:
