@@ -14,10 +14,19 @@ Note: The following examples are in Japanese.
 - [Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
 - [Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
 
+- [DeepSeek LLM: Scaling open-source language models with longtermism.](https://7shi.hateblo.jp/entry/2025/01/07/225023)
+- [DeepSeek-V2: A strong, economical, and efficient Mixture-of-Experts language model.](https://7shi.hateblo.jp/entry/2025/01/07/234352)
+- [DeepSeek-Coder-V2: Breaking the barrier of closed-source models in code intelligence.](https://7shi.hateblo.jp/entry/2025/01/07/235825)
+- [DeepSeek-V3 Technical Report](https://7shi.hateblo.jp/entry/2025/01/08/000133)
+
 ## Prerequisites
 
 - Python 3.10+
 - Gemini API Key (obtain from [Google AI Studio](https://aistudio.google.com/))
+
+Note: If you find it difficult to set up the environment locally, please refer to the following Google Colab Notebook by @shoei05 (explained in Japanese):
+
+- [論文要約 gemini-paper-summarizer を Google Colab で使用する](https://colab.research.google.com/drive/1yj02UYLNjXvz4nInB5zGzvrcawaJ_Mua?usp=sharing)
 
 ## Installation
 
