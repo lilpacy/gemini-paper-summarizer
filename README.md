@@ -10,13 +10,17 @@ Note: Currently, the output is in Japanese only.
 
 Note: The following examples are in Japanese.
 
-- [Attention Is All You Need](https://7shi.hateblo.jp/entry/2025/01/04/204353)
-- [Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
-- [Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
-- [DeepSeek LLM: Scaling open-source language models with longtermism.](https://7shi.hateblo.jp/entry/2025/01/07/225023)
-- [DeepSeek-V2: A strong, economical, and efficient Mixture-of-Experts language model.](https://7shi.hateblo.jp/entry/2025/01/07/234352)
-- [DeepSeek-Coder-V2: Breaking the barrier of closed-source models in code intelligence.](https://7shi.hateblo.jp/entry/2025/01/07/235825)
-- [DeepSeek-V3 Technical Report](https://7shi.hateblo.jp/entry/2025/01/08/000133)
+- [(2017) Attention Is All You Need](https://7shi.hateblo.jp/entry/2025/01/04/204353)
+- [(2018) Improving language understanding by generative pre-training](https://7shi.hateblo.jp/entry/2025/01/08/023518)
+- [(2023) Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
+- [(2024) Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
+
+DeepSeek
+
+- [(2024) DeepSeek LLM: Scaling open-source language models with longtermism.](https://7shi.hateblo.jp/entry/2025/01/07/225023)
+- [(2024) DeepSeek-V2: A strong, economical, and efficient Mixture-of-Experts language model.](https://7shi.hateblo.jp/entry/2025/01/07/234352)
+- [(2024) DeepSeek-Coder-V2: Breaking the barrier of closed-source models in code intelligence.](https://7shi.hateblo.jp/entry/2025/01/07/235825)
+- [(2024) DeepSeek-V3 Technical Report](https://7shi.hateblo.jp/entry/2025/01/08/000133)
 
 ## Prerequisites
 
