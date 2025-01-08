@@ -11,7 +11,13 @@ Note: Currently, the output is in Japanese only.
 Note: The following examples are in Japanese.
 
 - [(2017) Attention Is All You Need](https://7shi.hateblo.jp/entry/2025/01/04/204353)
+- [(2018) What you can cram into a single vector: Probing sentence embeddings for linguistic properties](https://7shi.hateblo.jp/entry/2025/01/09/032708)
 - [(2018) Improving language understanding by generative pre-training](https://7shi.hateblo.jp/entry/2025/01/08/023518)
+- [(2018) BERT: Pre-training of deep bidirectional Transformers for language understanding](https://7shi.hateblo.jp/entry/2025/01/09/011331)
+- [(2019) BERT rediscovers the classical NLP pipeline](https://7shi.hateblo.jp/entry/2025/01/09/014758)
+- [(2019) Linguistic knowledge and transferability of contextual representations](https://7shi.hateblo.jp/entry/2025/01/09/024710)
+- [(2019) A Structural Probe for Finding Syntax in Word Representations](https://7shi.hateblo.jp/entry/2025/01/09/030338)
+- [(2019) What does BERT look at? An analysis of BERT’s attention](https://7shi.hateblo.jp/entry/2025/01/09/034240)
 - [(2023) Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
 - [(2024) Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
 
