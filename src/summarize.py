@@ -1,5 +1,5 @@
 import os, argparse, json, re, time, math
-from datetime import datetime
+from datetime import datetime, timedelta
 from .section import Section
 
 # Load environment variables
@@ -105,11 +105,10 @@ def summarize_with_gemini(pdf_path, output):
                     if line.startswith("> "):
                         k = j
                     elif k < 0:
-                        if m := re.match(r"^([a-zA-Z_]+): ([0-9]+)", line):
+                        if m := re.match(r"^([a-zA-Z_]+): ([0-9]+)(.*)$", line):
                             stats.setdefault(m.group(1), 0)
-                            stats[m.group(1)] += int(m.group(2))
-                    else:
-                        break
+                            if not m.group(3):
+                                stats[m.group(1)] += int(m.group(2))
                 k += 1
                 while k < len(lines) and not lines[k]:
                     k += 1
@@ -129,12 +128,17 @@ def summarize_with_gemini(pdf_path, output):
                     print(f"Prompt {i}: {plines[0]}")
 
                 # Get the response
+                time1 = datetime.now()
+                time2 = None
                 rtext = ""
                 response = generate_content(file, prompt)
                 for chunk in response:
+                    if not time2:
+                        time2 = datetime.now()
                     chunk_text = chunk.text
                     print(chunk_text, end="", flush=True)
                     rtext += chunk_text
+                time3 = datetime.now()
                 if not rtext.endswith("\n"):
                     print(flush=True)
                 rtext = rtext.rstrip() + "\n"
@@ -149,11 +153,25 @@ def summarize_with_gemini(pdf_path, output):
                 # Get the statistics
                 chunk_dict = chunk.to_dict()
                 if "usage_metadata" in chunk_dict:
-                    for k, v in chunk_dict["usage_metadata"].items():
+                    usage = chunk_dict["usage_metadata"]
+                    usage["prompt_eval_duration"] = (time2 - time1).total_seconds()
+                    usage["prompt_eval_rate"] = usage["prompt_token_count"] / usage["prompt_eval_duration"]
+                    usage["candidate_eval_duration"] = (time3 - time2).total_seconds()
+                    usage["candidate_eval_rate"] = usage["candidates_token_count"] / usage["candidate_eval_duration"]
+                    for k, v in usage.items():
                         stats.setdefault(k, 0)
-                        stats[k] += v
+                        if k.endswith("_rate"):
+                            v = f"{v:.2f} tps"
+                            w = v
+                        else:
+                            if k.endswith("_duration"):
+                                v = int(v * 1000)
+                                w = timedelta(milliseconds=v)
+                            else:
+                                w = v
+                            stats[k] += v
                         text += f"{k}: {v}\n"
-                        print(f"{k}: {v}")
+                        print(f"{k}: {w}")
                 text += "\n"
 
                 # Add the prompt and response
@@ -177,6 +195,12 @@ def summarize_with_gemini(pdf_path, output):
             if i > 1:
                 result += "\n"
             result += title + "\n\n" + rtext
+
+            # Calculate the rates
+            prompt_eval_rate = stats["prompt_token_count"] / (stats["prompt_eval_duration"] / 1000)
+            candidate_eval_rate = stats["candidates_token_count"] / (stats["candidate_eval_duration"] / 1000)
+            stats["prompt_eval_rate"] = f"{prompt_eval_rate:.2f} tps"
+            stats["candidate_eval_rate"] = f"{candidate_eval_rate:.2f} tps"
     finally:
         if file:
             genai.delete_file(file.name)
