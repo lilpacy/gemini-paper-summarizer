@@ -115,21 +115,8 @@ def summarize_with_gemini(pdf_path, output):
                 else:
                     print(f"Prompt {i}: {plines[0]}")
 
-                # Get the response
-                time1 = datetime.now()
-                time2 = None
-                rtext = ""
-                response = gemini.generate_content(model, max_rpm, file, prompt)
-                for chunk in response:
-                    if not time2:
-                        time2 = datetime.now()
-                    chunk_text = chunk.text
-                    print(chunk_text, end="", flush=True)
-                    rtext += chunk_text
-                time3 = datetime.now()
-                if not rtext.endswith("\n"):
-                    print(flush=True)
-                rtext = rtext.rstrip() + "\n"
+                # Get the response and statistics
+                rtext, usage = gemini.generate_content(model, max_rpm, file, prompt)
 
                 # Get the section structure
                 if i == len(prompts) and "```json" in rtext:
@@ -138,28 +125,21 @@ def summarize_with_gemini(pdf_path, output):
                     seclen = len(sections.children)
                     rtext += "\n" + str(sections)
 
-                # Get the statistics
-                chunk_dict = chunk.to_dict()
-                if "usage_metadata" in chunk_dict:
-                    usage = chunk_dict["usage_metadata"]
-                    usage["prompt_eval_duration"] = (time2 - time1).total_seconds()
-                    usage["prompt_eval_rate"] = usage["prompt_token_count"] / usage["prompt_eval_duration"]
-                    usage["candidate_eval_duration"] = (time3 - time2).total_seconds()
-                    usage["candidate_eval_rate"] = usage["candidates_token_count"] / usage["candidate_eval_duration"]
-                    for k, v in usage.items():
-                        stats.setdefault(k, 0)
-                        if k.endswith("_rate"):
-                            v = f"{v:.2f} tps"
-                            w = v
+                # Show the statistics
+                for k, v in usage.items():
+                    stats.setdefault(k, 0)
+                    if k.endswith("_rate"):
+                        v = f"{v:.2f} tps"
+                        w = v
+                    else:
+                        if k.endswith("_duration"):
+                            v = int(v * 1000)
+                            w = timedelta(milliseconds=v)
                         else:
-                            if k.endswith("_duration"):
-                                v = int(v * 1000)
-                                w = timedelta(milliseconds=v)
-                            else:
-                                w = v
-                            stats[k] += v
-                        text += f"{k}: {v}\n"
-                        print(f"{k}: {w}")
+                            w = v
+                        stats[k] += v
+                    text += f"{k}: {v}\n"
+                    print(f"{k}: {w}")
                 text += "\n"
 
                 # Add the prompt and response
