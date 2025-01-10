@@ -1,7 +1,7 @@
 import math, time, re
-from datetime import datetime
+from datetime import datetime, timedelta
 
-interval = 60 + 5  # with margin
+interval = 60 + 1  # with margin
 
 timestamps = []
 
@@ -14,7 +14,6 @@ def generate_content(model, max_rpm, *args):
             wait = math.ceil(interval - td)
             print(f"Waiting {wait} seconds...")
             time.sleep(wait)
-    timestamps.append(datetime.now())
 
     # Get the response
     time1 = datetime.now()
@@ -28,6 +27,7 @@ def generate_content(model, max_rpm, *args):
         print(chunk_text, end="", flush=True)
         rtext += chunk_text
     time3 = datetime.now()
+    timestamps.append(time3)
     if not rtext.endswith("\n"):
         print(flush=True)
     rtext = rtext.rstrip() + "\n"
