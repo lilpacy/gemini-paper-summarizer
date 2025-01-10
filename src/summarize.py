@@ -93,10 +93,7 @@ def summarize_with_gemini(pdf_path, output):
                     if line.startswith("> "):
                         k = j
                     elif k < 0:
-                        if m := re.match(r"^([a-zA-Z_]+): ([0-9]+)(.*)$", line):
-                            stats.setdefault(m.group(1), 0)
-                            if not m.group(3):
-                                stats[m.group(1)] += int(m.group(2))
+                        gemini.update_stats(stats, *gemini.get_kv(line))
                 k += 1
                 while k < len(lines) and not lines[k]:
                     k += 1
@@ -126,13 +123,8 @@ def summarize_with_gemini(pdf_path, output):
                     rtext += "\n" + str(sections)
 
                 # Show the statistics
-                for k, v in usage.items():
-                    stats.setdefault(k, 0)
-                    w = v
-                    if not k.endswith("_rate"):
-                        if k.endswith("_duration"):
-                            w = timedelta(milliseconds=v)
-                        stats[k] += v
+                for k, v, w in gemini.iter_stats(usage):
+                    gemini.update_stats(stats, k, v)
                     text += f"{k}: {v}\n"
                     print(f"{k}: {w}")
                 text += "\n"

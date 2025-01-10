@@ -1,4 +1,4 @@
-import math, time
+import math, time, re
 from datetime import datetime
 
 interval = 60 + 5  # with margin
@@ -52,3 +52,26 @@ def set_stats(st):
         return
     st["prompt_eval_rate"    ] = f'{st["prompt_token_count"    ] / (dur1 / 1000):.2f} tps'
     st["candidates_eval_rate"] = f'{st["candidates_token_count"] / (dur2 / 1000):.2f} tps'
+
+def get_kv(line):
+    if m := re.match(r"^([a-zA-Z_]+): (.*)$", line):
+        k, v = m.group(1), m.group(2)
+        if v.isdigit():
+            return k, int(v)
+        return k, v
+    else:
+        return None, None
+
+def update_stats(st, k, v):
+    if not k:
+        return
+    st.setdefault(k, 0)
+    if not k.endswith("_rate"):
+        st[k] += v
+
+def iter_stats(st):
+    for k, v in st.items():
+        if k.endswith("_duration"):
+            yield k, v, timedelta(milliseconds=v)
+        else:
+            yield k, v, v
