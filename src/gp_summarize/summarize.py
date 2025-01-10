@@ -121,12 +121,12 @@ def summarize_with_gemini(pdf_path, output):
                     seclen = len(sections.children)
                     rtext += "\n" + str(sections)
 
-                # Show the statistics
-                for k, v, w in gemini.iter_stats(usage):
+                # Calculate and show the statistics
+                for k, v in gemini.iter_stats(usage):
                     gemini.update_stats(stats, k, v)
                     text += f"{k}: {v}\n"
-                    print(f"{k}: {w}")
                 text += "\n"
+                gemini.show_stats(usage)
 
                 # Add the prompt and response
                 for line in plines:
@@ -149,13 +149,12 @@ def summarize_with_gemini(pdf_path, output):
             if i > 1:
                 result += "\n"
             result += title + "\n\n" + rtext
-
-            # Calculate the rates
-            gemini.set_stats(stats)
     finally:
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
+
+    gemini.set_stats(stats)
     return result, output, stats
 
 def main():
@@ -169,8 +168,7 @@ def main():
         f.write(summary)
     print(f"Summary saved: {output}")
     print("Statistics:")
-    for k, v in stats.items():
-        print(f"- {k}: {v}")
+    gemini.show_stats(stats, "- ")
 
 if __name__ == '__main__':
     main()

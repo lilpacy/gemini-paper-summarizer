@@ -82,11 +82,15 @@ def iter_stats(st):
     st_keys = list(st.keys())
     for k in keys:
         if k in st:
-            v = st[k]
-            if k.endswith("_duration"):
-                yield k, v, timedelta(milliseconds=v)
-            else:
-                yield k, v, v
+            yield k, st[k]
             st_keys.remove(k)
     for k in st_keys:
-        yield k, st[k], st[k]
+        yield k, st[k]
+
+def show_stats(st, prefix=""):
+    if not st:
+        return
+    maxlen = max(len(k) for k in st)
+    for k, v in iter_stats(st):
+        w = timedelta(milliseconds=v) if k.endswith("_duration") else v
+        print(f"{prefix}{k.ljust(maxlen)}: {w}")
