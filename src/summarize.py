@@ -128,15 +128,10 @@ def summarize_with_gemini(pdf_path, output):
                 # Show the statistics
                 for k, v in usage.items():
                     stats.setdefault(k, 0)
-                    if k.endswith("_rate"):
-                        v = f"{v:.2f} tps"
-                        w = v
-                    else:
+                    w = v
+                    if not k.endswith("_rate"):
                         if k.endswith("_duration"):
-                            v = int(v * 1000)
                             w = timedelta(milliseconds=v)
-                        else:
-                            w = v
                         stats[k] += v
                     text += f"{k}: {v}\n"
                     print(f"{k}: {w}")
@@ -165,10 +160,7 @@ def summarize_with_gemini(pdf_path, output):
             result += title + "\n\n" + rtext
 
             # Calculate the rates
-            prompt_eval_rate = stats["prompt_token_count"] / (stats["prompt_eval_duration"] / 1000)
-            candidate_eval_rate = stats["candidates_token_count"] / (stats["candidate_eval_duration"] / 1000)
-            stats["prompt_eval_rate"] = f"{prompt_eval_rate:.2f} tps"
-            stats["candidate_eval_rate"] = f"{candidate_eval_rate:.2f} tps"
+            gemini.set_stats(stats)
     finally:
         if file:
             genai.delete_file(file.name)
