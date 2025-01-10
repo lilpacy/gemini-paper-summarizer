@@ -37,7 +37,6 @@ def generate_content(model, max_rpm, *args):
     if "usage_metadata" in chunk_dict:
         usage = chunk_dict["usage_metadata"]
         usage["prompt_eval_duration"    ] = int((time2 - time1).total_seconds() * 1000)  # in ms
-        usage["prompt_eval_rate"        ] = ""  # Adjust display order
         usage["candidates_eval_duration"] = int((time3 - time2).total_seconds() * 1000)  # in ms
         set_stats(usage)
     else:
@@ -70,8 +69,24 @@ def update_stats(st, k, v):
         st[k] += v
 
 def iter_stats(st):
-    for k, v in st.items():
-        if k.endswith("_duration"):
-            yield k, v, timedelta(milliseconds=v)
-        else:
-            yield k, v, v
+    keys = [
+        "cached_content_token_count",
+        "prompt_token_count",
+        "prompt_eval_duration",
+        "prompt_eval_rate",
+        "candidates_token_count",
+        "candidates_eval_duration",
+        "candidates_eval_rate",        
+        "total_token_count",
+    ]
+    st_keys = list(st.keys())
+    for k in keys:
+        if k in st:
+            v = st[k]
+            if k.endswith("_duration"):
+                yield k, v, timedelta(milliseconds=v)
+            else:
+                yield k, v, v
+            st_keys.remove(k)
+    for k in st_keys:
+        yield k, st[k], st[k]
