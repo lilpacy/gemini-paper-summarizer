@@ -1,6 +1,8 @@
-import os, argparse, json, re, time, math
+import os, argparse, json, re
 from datetime import datetime, timedelta
+
 from .section import Section
+from . import gemini
 
 # Load environment variables
 from dotenv import load_dotenv
@@ -9,8 +11,7 @@ load_dotenv()
 # Load after reading environment variables
 import google.generativeai as genai
 
-max_rpm  = 10       # maximum requests per minute
-interval = 60 + 5   # interval with margin
+max_rpm  = 10  # maximum requests per minute
 
 model = genai.GenerativeModel(
     model_name="models/gemini-2.0-flash-exp",
@@ -47,19 +48,6 @@ prompts = [
 ```"""),
 ]
 sprompt = ("セクション「%s」を日本語で要約してください。", "」「")
-
-timestamps = []
-
-# Limit the number of requests per minute
-def generate_content(*args):
-    if len(timestamps) >= max_rpm:
-        t = timestamps[-max_rpm]
-        if (td := (datetime.now() - t).total_seconds()) < interval:
-            wait = math.ceil(interval - td)
-            print(f"Waiting {wait} seconds...")
-            time.sleep(wait)
-    timestamps.append(datetime.now())
-    return model.generate_content(args, stream=True)
 
 def summarize_with_gemini(pdf_path, output):
     if output:
@@ -131,7 +119,7 @@ def summarize_with_gemini(pdf_path, output):
                 time1 = datetime.now()
                 time2 = None
                 rtext = ""
-                response = generate_content(file, prompt)
+                response = gemini.generate_content(model, max_rpm, file, prompt)
                 for chunk in response:
                     if not time2:
                         time2 = datetime.now()
