@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0] - 2025-01-11
+### Changed
+- Refactored project structure to use `gp_summarize` package
+- Standardized test cases using pytest format
+- Reorganized statistical display items and calculated TPS (Tokens Per Second)
+
 ## [0.3.0] - 2025-01-06
 ### Changed
 - Updated system prompt to output in a more formal Japanese style (だ・である調)
