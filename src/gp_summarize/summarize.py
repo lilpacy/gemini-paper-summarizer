@@ -4,7 +4,9 @@ import google.generativeai as genai
 from .section import Section
 from . import gemini
 
-def summarize(max_rpm, model, prompts, sprompt, pdf_path, output, output_dir):
+def summarize(max_rpm, model, lang_module, pdf_path, output, output_dir):
+    prompts = lang_module.prompts
+    sprompt = lang_module.sprompt
     if output:
         outdir, ext = os.path.splitext(output)
         if not ext:
