@@ -48,14 +48,17 @@ prompts = [
 ]
 sprompt = ("セクション「%s」を日本語で要約してください。", "」「")
 
-def summarize_with_gemini(pdf_path, output):
+def summarize_with_gemini(pdf_path, output, output_dir):
     if output:
-        output_dir, ext = os.path.splitext(output)
+        outdir, ext = os.path.splitext(output)
         if not ext:
             output += ".md"
     else:
-        output_dir = os.path.splitext(pdf_path)[0]
-        output = output_dir + ".md"
+        outdir = os.path.splitext(pdf_path)[0]
+        output = outdir + ".md"
+    if output_dir:
+        outdir = os.path.join(output_dir, os.path.basename(outdir))
+        output = os.path.join(output_dir, os.path.basename(output))
     file = None
     result = ""
     i = 0
@@ -73,7 +76,7 @@ def summarize_with_gemini(pdf_path, output):
                 prompt = sprompt[0] % sprompt[1].join(sections.children[j].flatten())
             else:
                 break
-            md = os.path.join(output_dir, f"{i:03d}.md")
+            md = os.path.join(outdir, f"{i:03d}.md")
             if os.path.exists(md):
                 print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
@@ -134,8 +137,7 @@ def summarize_with_gemini(pdf_path, output):
                 text += "\n" + rtext
 
                 # Save the file
-                if not os.path.exists(output_dir):
-                    os.mkdir(output_dir)
+                os.makedirs(outdir, exist_ok=True)
                 with open(md, "w", encoding="utf-8") as f:
                     f.write(text)
 
@@ -160,18 +162,22 @@ def summarize_with_gemini(pdf_path, output):
 def main():
     parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini API')
     parser.add_argument('pdf_paths', nargs='+', help='Path(s) to one or more PDF files')
+    parser.add_argument('-d', '--output-dir', help='Output directory for intermediate files')
     parser.add_argument('-o', '--output', help='Output file for summary')
     args = parser.parse_args()
-    if len(args.pdf_paths) > 1 and args.output:
-        parser.error("Output file (-o) cannot be specified when multiple PDF files are provided.")
-
     pdfs = len(args.pdf_paths)
+    if args.output:
+        if args.output_dir:
+            parser.error("Output directory (-d) cannot be specified when an output file (-o) is provided.")
+        if pdfs > 1:
+            parser.error("Output file (-o) cannot be specified when multiple PDF files are provided.")
+
     for i, pdf_path in enumerate(args.pdf_paths, 1):
         if i > 1:
             print()
         if pdfs > 1:
             print(f"==== PDF {i}/{pdfs}: {pdf_path}")
-        summary, output, stats = summarize_with_gemini(pdf_path, args.output)
+        summary, output, stats = summarize_with_gemini(pdf_path, args.output, args.output_dir)
         with open(output, "w", encoding="utf-8") as f:
             f.write(summary)
         print(f"Summary saved: {output}")
