@@ -1,5 +1,11 @@
-import math, time, re
+import logging, math, time, re
 from datetime import datetime, timedelta
+from google.api_core import retry
+
+# Display retry status
+logger = logging.getLogger("google.api_core.retry")
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
 
 interval = 60 + 1  # with margin
 
@@ -15,11 +21,16 @@ def generate_content(model, max_rpm, *args):
             print(f"Waiting {wait} seconds...")
             time.sleep(wait)
 
+    # Define a function for retry
+    @retry.Retry(initial=10)
+    def generate_content(*args, **kwargs):
+        return model.generate_content(*args, **kwargs)
+
     # Get the response
     time1 = datetime.now()
     time2 = None
     rtext = ""
-    response = model.generate_content(args, stream=True)
+    response = generate_content(args, stream=True)
     for chunk in response:
         if not time2:
             time2 = datetime.now()
