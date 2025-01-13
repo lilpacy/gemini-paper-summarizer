@@ -17,7 +17,7 @@ def generate_content(model, max_rpm, *args):
     if 0 < max_rpm <= len(timestamps):
         t = timestamps[-max_rpm]
         if (td := (datetime.now() - t).total_seconds()) < interval:
-            wait = math.ceil(interval - td)
+            wait = math.ceil((interval - td) * 10) / 10
             print(f"Waiting {wait} seconds...")
             time.sleep(wait)
 
