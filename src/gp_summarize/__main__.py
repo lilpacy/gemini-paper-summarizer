@@ -22,13 +22,6 @@ if args.output:
     if pdfs > 1:
         parser.error("Output file (-o) cannot be specified when multiple PDF files are provided.")
 
-import locale
-system_lang = args.language if args.language else locale.getlocale()[0]
-if system_lang and system_lang.startswith('ja') or system_lang.startswith('Japanese'):
-    from .lang import ja as lang_module
-else:
-    from .lang import en as lang_module
-
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -37,6 +30,9 @@ genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 from .summarize import summarize
 from . import gemini
+from .lang import selector
+
+lang_module = selector.init(args.language)
 
 max_rpm  = 10  # maximum requests per minute
 
