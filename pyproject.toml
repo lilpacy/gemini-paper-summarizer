@@ -2,12 +2,22 @@
 name = "gemini-paper-summarizer"
 version = "0.4.0"
 description = "Gemini Paper Summarizer"
+authors = [{ name = "7shi", email = "7shi@live.jp" }]
 readme = "README.md"
+license = { text = "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication" }
 requires-python = ">=3.10"
 dependencies = [
     "google-generativeai>=0.8.3",
-    "hatchling>=1.27.0",
     "python-dotenv>=1.0.1",
+]
+
+[project.urls]
+Repository = "https://github.com/7shi/gemini-paper-summarizer"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "twine>=6.0.1",
 ]
 
 [build-system]
@@ -18,4 +28,4 @@ build-backend = "hatchling.build"
 packages = ["src/gp_summarize"]
 
 [project.scripts]
-gp-summarize = "gp_summarize.summarize:main"
+gp-summarize = "gp_summarize.__main__:main"
