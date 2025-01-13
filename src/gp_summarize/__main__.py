@@ -3,7 +3,7 @@ parser = argparse.ArgumentParser(description='Summarize academic papers using Ge
 parser.add_argument('pdf_paths', nargs='+', help='Path(s) to one or more PDF files')
 parser.add_argument('-d', '--output-dir', help='Output directory for intermediate files')
 parser.add_argument('-o', '--output', help='Output file for summary')
-parser.add_argument('-l', '--language', choices=['en', 'ja'], default=None, help='Specify the output language')
+parser.add_argument('-l', '--language', choices=['de', 'en', 'es', 'fr', 'ja', 'ko', 'zh'], default=None, help='Specify the output language')
 args = parser.parse_args()
 
 import os
