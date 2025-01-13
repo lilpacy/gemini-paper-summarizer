@@ -23,8 +23,8 @@ def generate_content(model, max_rpm, *args):
 
     # Define a function for retry
     @retry.Retry(initial=10)
-    def generate_content(*args, **kwargs):
-        response = model.generate_content(*args, **kwargs)
+    def generate_content():
+        response = model.generate_content(args, stream=True)
         time2 = None
         rtext = ""
         for chunk in response:
@@ -37,7 +37,7 @@ def generate_content(model, max_rpm, *args):
 
     # Get the response
     time1 = datetime.now()
-    time2, rtext, chunk = generate_content(args, stream=True)
+    time2, rtext, chunk = generate_content()
     time3 = datetime.now()
     timestamps.append(time3)
     if not rtext.endswith("\n"):
