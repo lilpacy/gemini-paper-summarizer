@@ -159,16 +159,24 @@ def summarize_with_gemini(pdf_path, output):
 
 def main():
     parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini API')
-    parser.add_argument('pdf_path', help='Path to the PDF file')
+    parser.add_argument('pdf_paths', nargs='+', help='Path(s) to one or more PDF files')
     parser.add_argument('-o', '--output', help='Output file for summary')
     args = parser.parse_args()
+    if len(args.pdf_paths) > 1 and args.output:
+        parser.error("Output file (-o) cannot be specified when multiple PDF files are provided.")
 
-    summary, output, stats = summarize_with_gemini(args.pdf_path, args.output)
-    with open(output, "w", encoding="utf-8") as f:
-        f.write(summary)
-    print(f"Summary saved: {output}")
-    print("Statistics:")
-    gemini.show_stats(stats, "- ")
+    pdfs = len(args.pdf_paths)
+    for i, pdf_path in enumerate(args.pdf_paths, 1):
+        if i > 1:
+            print()
+        if pdfs > 1:
+            print(f"==== PDF {i}/{pdfs}: {pdf_path}")
+        summary, output, stats = summarize_with_gemini(pdf_path, args.output)
+        with open(output, "w", encoding="utf-8") as f:
+            f.write(summary)
+        print(f"Summary saved: {output}")
+        print("Statistics:")
+        gemini.show_stats(stats, "- ")
 
 if __name__ == '__main__':
     main()
