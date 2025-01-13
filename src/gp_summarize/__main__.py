@@ -32,6 +32,8 @@ from . import gemini
 
 max_rpm  = 10  # maximum requests per minute
 
+from .lang.ja import system_instruction, prompts, sprompt
+
 model = genai.GenerativeModel(
     model_name="models/gemini-2.0-flash-exp",
     generation_config={
@@ -41,32 +43,8 @@ model = genai.GenerativeModel(
         "max_output_tokens": 8192,
         "response_mime_type": "text/plain",
     },
-    system_instruction="""
-You are an expert at analyzing and summarizing academic papers.
-Please use $TeX$ to write mathematical equations.
-Please only return the results, and do not include any comments.
-日本語は「だ・である調」を使用してください。
-""".strip(),
+    system_instruction=system_instruction,
 )
-
-prompts = [
-    ("# Abstract", "論文の最初にあるAbstractを日本語に翻訳してください。"),
-    ("# 概要", "日本語で、一行の文章で要約してください。"),
-    ("## 問題意識", "論文はどのような問題を解決しようとしていますか？日本語で回答してください。"),
-    ("## 手法", "論文はどのような手法を提案していますか？日本語で回答してください。"),
-    ("## 新規性", "論文はどのような新規性がありますか？日本語で回答してください。"),
-    ("# 章構成", """章構成を翻訳せずにJSONの配列で出力してください。例:
-```json
-[
-  "1 Introduction",
-  "1.1 Background",
-  "2 Methods",
-  "2.1 Data",
-  "2.1.1 Dataset"
-]
-```"""),
-]
-sprompt = ("セクション「%s」を日本語で要約してください。", "」「")
 
 def main():
     for i, pdf_path in enumerate(pdf_paths, 1):
