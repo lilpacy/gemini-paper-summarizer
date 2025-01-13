@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.0] - 2025-01-14
+### Added
+- Multilingual support for `de`, `en`, `es`, `fr`, `ja`, `ko`, `zh` language modules
+- Support for processing multiple PDF files in a single run
+- Output directory option (`-d` or `--output-dir`)
+
+### Improved
+- Enhanced Gemini API call reliability with retry mechanism and logging
+- Added Windows file globbing support
+
 ## [0.4.0] - 2025-01-11
 ### Changed
 - Refactored project structure to use `gp_summarize` package
