@@ -1,4 +1,4 @@
-import argparse
+import argparse, os
 
 parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini API')
 parser.add_argument('pdf_paths', nargs='+', help='Path(s) to one or more PDF files')
@@ -6,7 +6,15 @@ parser.add_argument('-d', '--output-dir', help='Output directory for intermediat
 parser.add_argument('-o', '--output', help='Output file for summary')
 args = parser.parse_args()
 
-pdfs = len(args.pdf_paths)
+if os.name == 'nt':  # Check if the system is Windows
+    from glob import glob
+    pdf_paths = []
+    for path in args.pdf_paths:
+        pdf_paths.extend(glob(path))
+else:
+    pdf_paths = args.pdf_paths
+
+pdfs = len(pdf_paths)
 if args.output:
     if args.output_dir:
         parser.error("Output directory (-d) cannot be specified when an output file (-o) is provided.")
@@ -61,7 +69,7 @@ prompts = [
 sprompt = ("セクション「%s」を日本語で要約してください。", "」「")
 
 def main():
-    for i, pdf_path in enumerate(args.pdf_paths, 1):
+    for i, pdf_path in enumerate(pdf_paths, 1):
         if i > 1:
             print()
         if pdfs > 1:
