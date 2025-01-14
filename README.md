@@ -8,9 +8,12 @@ Note: Supports multiple languages: Chinese, English, French, German, Japanese, K
 
 ## Examples
 
-Note: The following examples are in Japanese.
+See the [examples](examples) directory for sample outputs, including summaries of:
 
-- [(2017) Attention Is All You Need](https://7shi.hateblo.jp/entry/2025/01/04/204353)
+- [Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., … Polosukhin, I. (2017). Attention Is All You Need.](https://arxiv.org/abs/1706.03762v7)
+
+### Other Summaries in Japanese
+
 - [(2018) What you can cram into a single vector: Probing sentence embeddings for linguistic properties](https://7shi.hateblo.jp/entry/2025/01/09/032708)
 - [(2018) Improving language understanding by generative pre-training](https://7shi.hateblo.jp/entry/2025/01/08/023518)
 - [(2018) BERT: Pre-training of deep bidirectional Transformers for language understanding](https://7shi.hateblo.jp/entry/2025/01/09/011331)
