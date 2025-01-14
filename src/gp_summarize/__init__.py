@@ -4,4 +4,5 @@ Gemini Paper Summarizer - A tool to summarize academic papers using Google's Gem
 
 from importlib.metadata import version
 
-__version__ = version("gemini-paper-summarizer")
+name = "gemini-paper-summarizer"
+__version__ = version(name)
