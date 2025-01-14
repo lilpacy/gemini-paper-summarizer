@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.1] - 2025-01-14
+### Added
+- `--version` option to display package version
+- Added examples
+
 ## [0.5.0] - 2025-01-14
 ### Added
 - Multilingual support for `de`, `en`, `es`, `fr`, `ja`, `ko`, `zh` language modules
