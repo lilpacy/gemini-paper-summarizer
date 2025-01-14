@@ -1,5 +1,5 @@
 import logging, math, time, re
-from datetime import datetime, timedelta
+from datetime import timedelta
 from google.api_core import retry
 
 # Display retry status
@@ -16,29 +16,13 @@ def generate_content(model, max_rpm, *args):
     # Wait due to rate limiting
     if 0 < max_rpm <= len(timestamps):
         t = timestamps[-max_rpm]
-        if (td := (datetime.now() - t).total_seconds()) < interval:
+        if (td := time.monotonic() - t) < interval:
             wait = math.ceil((interval - td) * 10) / 10
             print(f"Waiting {wait} seconds...")
             time.sleep(wait)
 
-    # Define a function for retry
-    @retry.Retry(initial=10)
-    def generate_content():
-        response = model.generate_content(args, stream=True)
-        time2 = None
-        rtext = ""
-        for chunk in response:
-            if not time2:
-                time2 = datetime.now()
-            chunk_text = chunk.text
-            print(chunk_text, end="", flush=True)
-            rtext += chunk_text
-        return time2, rtext, chunk
-
     # Get the response
-    time1 = datetime.now()
-    time2, rtext, chunk = generate_content()
-    time3 = datetime.now()
+    time1, time2, time3, rtext, chunk = generate_content_retry(model, args)
     timestamps.append(time3)
     if not rtext.endswith("\n"):
         print(flush=True)
@@ -48,13 +32,28 @@ def generate_content(model, max_rpm, *args):
     chunk_dict = chunk.to_dict()
     if "usage_metadata" in chunk_dict:
         usage = chunk_dict["usage_metadata"]
-        usage["prompt_eval_duration"    ] = int((time2 - time1).total_seconds() * 1000)  # in ms
-        usage["candidates_eval_duration"] = int((time3 - time2).total_seconds() * 1000)  # in ms
+        usage["prompt_eval_duration"    ] = int((time2 - time1) * 1000)  # in ms
+        usage["candidates_eval_duration"] = int((time3 - time2) * 1000)  # in ms
         set_stats(usage)
     else:
         usage = {}
 
     return rtext, usage
+
+@retry.Retry(initial=10)
+def generate_content_retry(model, args):
+    time1 = time.monotonic()
+    response = model.generate_content(args, stream=True)
+    time2 = None
+    rtext = ""
+    for chunk in response:
+        if not time2:
+            time2 = time.monotonic()
+        chunk_text = chunk.text
+        print(chunk_text, end="", flush=True)
+        rtext += chunk_text
+    time3 = time.monotonic()
+    return time1, time2, time3, rtext, chunk
 
 def set_stats(st):
     dur1 = st.get("prompt_eval_duration"    , 0)
@@ -88,7 +87,7 @@ def iter_stats(st):
         "prompt_eval_rate",
         "candidates_token_count",
         "candidates_eval_duration",
-        "candidates_eval_rate",        
+        "candidates_eval_rate",
         "total_token_count",
     ]
     st_keys = list(st.keys())
