@@ -4,7 +4,7 @@ import google.generativeai as genai
 from .section import Section
 from . import gemini
 
-def summarize(max_rpm, model, lang_module, pdf_path, output, output_dir):
+def summarize(max_rpm, model, lang_module, pdf_path, output=None, output_dir=None, prefix=""):
     prompts = lang_module.prompts
     sprompt = lang_module.sprompt
     if output:
@@ -67,10 +67,8 @@ def summarize(max_rpm, model, lang_module, pdf_path, output, output_dir):
                 # Prepare the prompt
                 plines = prompt.rstrip().splitlines()
                 text = f"# Prompt {i}\n\n"
-                if seclen:
-                    print(f"Prompt {i}/{len(prompts) + seclen}: {plines[0]}")
-                else:
-                    print(f"Prompt {i}: {plines[0]}")
+                plen = f"/{len(prompts) + seclen}" if seclen else ""
+                print(f"---- {prefix}Prompt {i}{plen}: {plines[0]}")
 
                 # Get the response and statistics
                 rtext, usage = gemini.generate_content(model, max_rpm, file, prompt)

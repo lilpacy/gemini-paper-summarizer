@@ -54,11 +54,11 @@ def main():
     for i, pdf_path in enumerate(pdf_paths, 1):
         if i > 1:
             print()
-        if pdfs > 1:
-            print(f"==== PDF {i}/{pdfs}: {pdf_path}")
+        print(f"==== PDF {i}/{pdfs}: {pdf_path}")
         summary, output, stats = summarize(
             max_rpm, model, lang_module,
-            pdf_path, args.output, args.output_dir
+            pdf_path, args.output, args.output_dir,
+            f"PDF {i}/{pdfs}, ",
         )
         with open(output, "w", encoding="utf-8") as f:
             f.write(summary)
