@@ -1,5 +1,6 @@
 import logging, math, time, re
 from datetime import timedelta
+from tqdm import tqdm
 from google.api_core import retry
 
 # Display retry status
@@ -17,9 +18,13 @@ def generate_content(model, max_rpm, *args):
     if 0 < max_rpm <= len(timestamps):
         t = timestamps[-max_rpm]
         if (td := time.monotonic() - t) < interval:
-            wait = math.ceil((interval - td) * 10) / 10
-            print(f"Waiting {wait} seconds...")
-            time.sleep(wait)
+            wait = math.ceil((interval - td) * 10)
+            print(f"Waiting {wait/10} seconds...")
+            if (wait_1 := wait % 10):
+                time.sleep(wait_1 / 10)
+            if wait >= 10:
+                for _ in tqdm(range(wait // 10)):
+                    time.sleep(1)
 
     # Get the response
     time1, time2, time3, rtext, chunk = generate_content_retry(model, args)
