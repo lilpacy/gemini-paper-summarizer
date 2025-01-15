@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.2] - 2025-01-15
+### Improved
+- Improved waiting time display with progress bar in `generate_content`
+- Improved prompt display with current and total PDF count
+
 ## [0.5.1] - 2025-01-14
 ### Added
 - `--version` option to display package version
