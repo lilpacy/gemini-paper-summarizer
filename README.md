@@ -81,6 +81,50 @@ For each prompt, the tool generates a markdown file containing:
 
 The section structure will be displayed in both JSON format and as a hierarchical list.
 
+## Command-Line Options
+
+```
+python -m gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [--version] pdf_paths [pdf_paths ...]
+```
+
+- `pdf_paths`: **Required** Path(s) to one or more PDF files to summarize
+  - Multiple PDF files can be specified
+  - Wildcards (`*`) are supported on Windows
+
+- `-d, --output-dir`: Optional. Specify the output directory for intermediate files
+  - Recommended when processing multiple PDF files
+
+- `-o, --output`: Optional. Specify the output file for the summary
+  - Can only be used with a single PDF file
+
+- `-l, --language`: Optional. Specify the output language
+  - Supported languages: `de` (German), `en` (English), `es` (Spanish), `fr` (French), `ja` (Japanese), `ko` (Korean), `zh` (Chinese)
+  - Default: Based on system language settings
+
+- `--version`: Display version information
+
+### Examples
+
+Summarize a single PDF:
+```
+python -m gp_summarize paper.pdf
+```
+
+Summarize multiple PDFs:
+```
+python -m gp_summarize paper1.pdf paper2.pdf
+```
+
+Specify an output directory:
+```
+python -m gp_summarize -d ./outputs paper.pdf
+```
+
+Summarize in a specific language:
+```
+python -m gp_summarize -l ja paper.pdf
+```
+
 ## License
 
 CC0 1.0 Universal
