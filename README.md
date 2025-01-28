@@ -30,6 +30,7 @@ DeepSeek
 - [(2024) DeepSeek-V2: A strong, economical, and efficient Mixture-of-Experts language model.](https://7shi.hateblo.jp/entry/2025/01/07/234352)
 - [(2024) DeepSeek-Coder-V2: Breaking the barrier of closed-source models in code intelligence.](https://7shi.hateblo.jp/entry/2025/01/07/235825)
 - [(2024) DeepSeek-V3 Technical Report](https://7shi.hateblo.jp/entry/2025/01/08/000133)
+- [(2025) DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://7shi.hateblo.jp/entry/2025/01/28/225747)
 
 ## Prerequisites
 
