@@ -4,7 +4,7 @@
 
 A command-line tool that uses Gemini API to generate summaries of academic papers.
 
-Note: Supports multiple languages: Chinese, English, French, German, Japanese, Korean, and Spanish.
+Supports output in multiple languages: Chinese, English, French, German, Japanese, Korean, and Spanish.
 
 ## Examples
 
