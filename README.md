@@ -85,7 +85,7 @@ The section structure will be displayed in both JSON format and as a hierarchica
 ## Command-Line Options
 
 ```
-python -m gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [--version] pdf_paths [pdf_paths ...]
+uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [--version] pdf_paths [pdf_paths ...]
 ```
 
 - `pdf_paths`: **Required** Path(s) to one or more PDF files to summarize
@@ -108,22 +108,22 @@ python -m gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,z
 
 Summarize a single PDF:
 ```
-python -m gp_summarize paper.pdf
+uv run gp_summarize paper.pdf
 ```
 
 Summarize multiple PDFs:
 ```
-python -m gp_summarize paper1.pdf paper2.pdf
+uv run gp_summarize paper1.pdf paper2.pdf
 ```
 
 Specify an output directory:
 ```
-python -m gp_summarize -d ./outputs paper.pdf
+uv run gp_summarize -d ./outputs paper.pdf
 ```
 
 Summarize in a specific language:
 ```
-python -m gp_summarize -l ja paper.pdf
+uv run gp_summarize -l ja paper.pdf
 ```
 
 ## License
