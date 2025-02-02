@@ -22,6 +22,7 @@ See the [examples](examples) directory for sample outputs, including summaries o
 - [(2019) A Structural Probe for Finding Syntax in Word Representations](https://7shi.hateblo.jp/entry/2025/01/09/030338)
 - [(2019) What does BERT look at? An analysis of BERT’s attention](https://7shi.hateblo.jp/entry/2025/01/09/034240)
 - [(2022) Symbolic Knowledge Distillation: from General Language Models to Commonsense Models](https://7shi.hateblo.jp/entry/2025/02/02/114424)
+- [(2023) A Benchmark for Learning to Translate a New Language from One Grammar Book](https://7shi.hateblo.jp/entry/2025/02/02/165257)
 - [(2023) Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
 - [(2024) Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
 
