@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.3] - 2025-02-07
+### Changed
+- Updated default model to `gemini-2.0-flash`
+
+### Added
+- `-m/--model` option to specify Gemini model
+- `--rpm` option to set maximum requests per minute (default: 15)
+
 ## [0.5.2] - 2025-01-15
 ### Improved
 - Improved waiting time display with progress bar in `generate_content`
