@@ -5,6 +5,8 @@ parser.add_argument('pdf_paths', nargs='+', help='Path(s) to one or more PDF fil
 parser.add_argument('-d', '--output-dir', help='Output directory for intermediate files')
 parser.add_argument('-o', '--output', help='Output file for summary')
 parser.add_argument('-l', '--language', choices=['de', 'en', 'es', 'fr', 'ja', 'ko', 'zh'], default=None, help='Specify the output language')
+parser.add_argument('-m', '--model', default='gemini-2.0-flash', help='Specify the Gemini model to use')
+parser.add_argument('--rpm', type=int, default=15, help='Maximum requests per minute (default: 15)')
 parser.add_argument('--version', action='version', version=f'{name} {__version__}')
 args = parser.parse_args()
 
@@ -36,10 +38,8 @@ from .lang import selector
 
 lang_module = selector.init(args.language)
 
-max_rpm  = 10  # maximum requests per minute
-
 model = genai.GenerativeModel(
-    model_name="models/gemini-2.0-flash-exp",
+    model_name="models/" + args.model,
     generation_config={
         "temperature": 0.5,
         "top_p": 0.95,
@@ -56,7 +56,7 @@ def main():
             print()
         print(f"==== PDF {i}/{pdfs}: {pdf_path}")
         summary, output, stats = summarize(
-            max_rpm, model, lang_module,
+            args.rpm, model, lang_module,
             pdf_path, args.output, args.output_dir,
             f"PDF {i}/{pdfs}, ",
         )
