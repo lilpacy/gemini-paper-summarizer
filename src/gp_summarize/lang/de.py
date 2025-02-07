@@ -8,7 +8,7 @@ Use a formal academic writing style in German.
 """.strip()
 
 prompts = [
-    ("# Titel", "Übersetzen Sie den Titel des Papers auf Deutsch."),
+    ("# Titel", "Übersetzen Sie nur den Titel des Papers auf Deutsch."),
     ("# Abstract", "Übersetzen Sie den Abstract am Anfang des Dokuments auf Deutsch."),
     ("# Zusammenfassung", "Fassen Sie das Dokument in einem Satz auf Deutsch zusammen."),
     ("## Problemstellung", "Welches Problem versucht das Dokument zu lösen? Antworten Sie auf Deutsch."),
