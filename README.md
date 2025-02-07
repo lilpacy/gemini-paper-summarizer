@@ -87,7 +87,7 @@ The section structure will be displayed in both JSON format and as a hierarchica
 ## Command-Line Options
 
 ```
-uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [-m MODEL] [--rpm RPM] [--suffix SUFFIX] [--cache] [--version] pdf_paths [pdf_paths ...]
+uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [-m MODEL] [--rpm RPM] [--suffix SUFFIX] [--ccache] [--version] pdf_paths [pdf_paths ...]
 ```
 
 - `pdf_paths`: **Required** Path(s) to one or more PDF files to summarize
@@ -113,7 +113,7 @@ uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}]
 - `--suffix`: Optional. Add custom suffix to the output filename
   - Useful for differentiating the output filename from the source PDF
 
-- `--cache`: Optional. Enable context caching
+- `--ccache`: Optional. Enable context caching
   - Caches source PDF to reduce API usage costs
   - Currently disabled by default as it's not supported in Gemini 2.0 Flash
 
