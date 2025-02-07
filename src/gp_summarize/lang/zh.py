@@ -8,6 +8,7 @@ Use a formal academic writing style in Chinese.
 """.strip()
 
 prompts = [
+    ("# 标题", "将论文标题翻译成中文。"),
     ("# Abstract", "将文档开头的摘要翻译成中文。"),
     ("# 概述", "用一句话用中文总结文档。"),
     ("## 问题陈述", "文档试图解决什么问题？用中文回答。"),

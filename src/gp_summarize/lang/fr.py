@@ -8,6 +8,7 @@ Use a formal academic writing style in French.
 """.strip()
 
 prompts = [
+    ("# Titre", "Traduisez le titre de l'article en français."),
     ("# Abstract", "Traduisez l'Abstract au début du document en français."),
     ("# Résumé", "Résumez le document en une seule phrase en français."),
     ("## Énoncé du Problème", "Quel problème le document cherche-t-il à résoudre ? Répondez en français."),

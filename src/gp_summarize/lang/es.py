@@ -8,6 +8,7 @@ Use a formal academic writing style in Spanish.
 """.strip()
 
 prompts = [
+    ("# Título", "Traduce el título del artículo al español."),
     ("# Abstract", "Traduce el Abstract al principio del documento al español."),
     ("# Resumen", "Resume el documento en una sola oración en español."),
     ("## Planteamiento del Problema", "¿Qué problema intenta resolver el documento? Responde en español."),

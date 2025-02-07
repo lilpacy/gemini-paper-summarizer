@@ -8,6 +8,7 @@ Use a formal academic writing style.
 """.strip()
 
 prompts = [
+    ("# Title", "Translate the paper title into English."),
     ("# Abstract", "Translate the Abstract at the beginning of the paper into English."),
     ("# Overview", "Summarize the paper in a single sentence in English."),
     ("## Problem Statement", "What problem is the paper trying to solve? Answer in English."),

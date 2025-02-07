@@ -1,6 +1,6 @@
 name = "Japanese"
 
-system_instruction="""
+system_instruction = """
 You are an expert at analyzing and summarizing academic papers.
 Please use $TeX$ to write mathematical equations.
 Please only return the results, and do not include any comments.
@@ -8,6 +8,7 @@ Please only return the results, and do not include any comments.
 """.strip()
 
 prompts = [
+    ("# タイトル", "論文のタイトルを日本語に翻訳せよ。"),
     ("# Abstract", "論文の最初にあるAbstractを日本語に翻訳せよ。"),
     ("# 概要", "日本語で、一行の文章で要約せよ。"),
     ("## 問題意識", "論文はどのような問題を解決しようとしているか？日本語で回答せよ。"),

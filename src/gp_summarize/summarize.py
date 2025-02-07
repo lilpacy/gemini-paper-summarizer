@@ -40,16 +40,17 @@ def summarize(
     stats = {}
     try:
         while True:
+            pnum = i
             i += 1
             if i <= len(prompts):
-                title = prompts[i - 1][0]
-                prompt = prompts[i - 1][1]
+                title = prompts[pnum][0]
+                prompt = prompts[pnum][1]
             elif (j := i - len(prompts) - 1) < seclen:
                 title = "## " + sections.children[j].title
                 prompt = sprompt[0] % sprompt[1].join(sections.children[j].flatten())
             else:
                 break
-            md = os.path.join(outdir, f"{i:03d}.md")
+            md = os.path.join(outdir, f"{pnum:03d}.md")
             if os.path.exists(md):
                 print(f"Skipping existing file: {md}")
                 with open(md, "r", encoding="utf-8") as f:
@@ -88,9 +89,9 @@ def summarize(
 
                 # Prepare the prompt
                 plines = prompt.rstrip().splitlines()
-                text = f"# Prompt {i}\n\n"
-                plen = f"/{len(prompts) + seclen}" if seclen else ""
-                print(f"---- {prefix}Prompt {i}{plen}: {plines[0]}")
+                text = f"# Prompt {pnum}\n\n"
+                plen = f"/{len(prompts) + seclen - 1}" if seclen else ""
+                print(f"---- {prefix}Prompt {pnum}{plen}: {plines[0]}")
 
                 # Get the response and statistics
                 if cache:
