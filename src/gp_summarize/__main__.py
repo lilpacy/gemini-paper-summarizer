@@ -38,17 +38,17 @@ from .lang import selector
 
 lang_module = selector.init(args.language)
 
-model = genai.GenerativeModel(
-    model_name="models/" + args.model,
-    generation_config={
-        "temperature": 0.5,
-        "top_p": 0.95,
-        "top_k": 40,
-        "max_output_tokens": 8192,
-        "response_mime_type": "text/plain",
-    },
-    system_instruction=lang_module.system_instruction,
-)
+model_name = args.model
+if not model_name.startswith("models/"):
+    model_name = "models/" + args.model
+
+generation_config = {
+    "temperature": 0.5,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
 
 def main():
     for i, pdf_path in enumerate(pdf_paths, 1):
@@ -56,8 +56,14 @@ def main():
             print()
         print(f"==== PDF {i}/{pdfs}: {pdf_path}")
         summary, output, stats = summarize(
-            args.rpm, model, lang_module,
-            pdf_path, args.output, args.output_dir,
+            model_name,
+            generation_config,
+            lang_module.system_instruction,
+            args.rpm,
+            lang_module,
+            pdf_path,
+            args.output,
+            args.output_dir,
             f"PDF {i}/{pdfs}, ",
         )
         with open(output, "w", encoding="utf-8") as f:

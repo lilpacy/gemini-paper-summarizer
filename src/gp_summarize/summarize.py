@@ -4,7 +4,22 @@ import google.generativeai as genai
 from .section import Section
 from . import gemini
 
-def summarize(max_rpm, model, lang_module, pdf_path, output=None, output_dir=None, prefix=""):
+def summarize(
+    model_name,
+    generation_config,
+    system_instruction,
+    max_rpm,
+    lang_module,
+    pdf_path,
+    output=None,
+    output_dir=None,
+    prefix=""
+):
+    model = genai.GenerativeModel(
+        model_name=model_name,
+        generation_config=generation_config,
+        system_instruction=system_instruction,
+    )
     prompts = lang_module.prompts
     sprompt = lang_module.sprompt
     if output:
