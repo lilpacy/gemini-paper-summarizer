@@ -1,9 +1,13 @@
 # Changelog
 
+## [0.5.4] - 2025-02-08
+### Added
+- `--suffix` option for custom file naming
+- `--ccache` option for reducing API usage costs
+
 ## [0.5.3] - 2025-02-07
 ### Changed
 - Updated default model to `gemini-2.0-flash`
-
 ### Added
 - `-m/--model` option to specify Gemini model
 - `--rpm` option to set maximum requests per minute (default: 15)
@@ -23,7 +27,6 @@
 - Multilingual support for `de`, `en`, `es`, `fr`, `ja`, `ko`, `zh` language modules
 - Support for processing multiple PDF files in a single run
 - Output directory option (`-d` or `--output-dir`)
-
 ### Improved
 - Enhanced Gemini API call reliability with retry mechanism and logging
 - Added Windows file globbing support
