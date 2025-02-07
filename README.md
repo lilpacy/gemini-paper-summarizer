@@ -87,7 +87,7 @@ The section structure will be displayed in both JSON format and as a hierarchica
 ## Command-Line Options
 
 ```
-uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [--version] pdf_paths [pdf_paths ...]
+uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [-m MODEL] [--rpm RPM] [--suffix SUFFIX] [--cache] [--version] pdf_paths [pdf_paths ...]
 ```
 
 - `pdf_paths`: **Required** Path(s) to one or more PDF files to summarize
@@ -103,6 +103,19 @@ uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}]
 - `-l, --language`: Optional. Specify the output language
   - Supported languages: `de` (German), `en` (English), `es` (Spanish), `fr` (French), `ja` (Japanese), `ko` (Korean), `zh` (Chinese)
   - Default: Based on system language settings
+
+- `-m, --model`: Optional. Specify the Gemini model to use
+  - Default: gemini-2.0-flash
+
+- `--rpm`: Optional. Set maximum requests per minute
+  - Default: 15
+
+- `--suffix`: Optional. Add custom suffix to the output filename
+  - Useful for differentiating the output filename from the source PDF
+
+- `--cache`: Optional. Enable context caching
+  - Caches source PDF to reduce API usage costs
+  - Currently disabled by default as it's not supported in Gemini 2.0 Flash
 
 - `--version`: Display version information
 
