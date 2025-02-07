@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.0] - 2025-02-09
+### Changed
+- Translation for paper's title
+
 ## [0.5.4] - 2025-02-08
 ### Added
 - `--suffix` option for custom file naming
