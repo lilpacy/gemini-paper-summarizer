@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.1] - 2025-02-09
+### Changed
+- Updated prompts to specify only title translation
+- Updated examples
+
 ## [0.6.0] - 2025-02-09
 ### Changed
 - Translation for paper's title
