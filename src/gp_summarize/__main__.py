@@ -8,6 +8,7 @@ parser.add_argument('-l', '--language', choices=['de', 'en', 'es', 'fr', 'ja', '
 parser.add_argument('-m', '--model', default='gemini-2.0-flash', help='Specify the Gemini model to use')
 parser.add_argument('--rpm', type=int, default=15, help='Maximum requests per minute (default: 15)')
 parser.add_argument('--version', action='version', version=f'{name} {__version__}')
+parser.add_argument('--suffix', help='Suffix to add to the output file name')
 parser.add_argument('--ccache', action='store_true', default=False, help='Enable context caching')
 args = parser.parse_args()
 
@@ -65,6 +66,7 @@ def main():
             pdf_path,
             args.output,
             args.output_dir,
+            args.suffix,
             f"PDF {i}/{pdfs}, ",
             args.ccache,
         )

@@ -13,6 +13,7 @@ def summarize(
     pdf_path,
     output=None,
     output_dir=None,
+    output_suffix=None,
     prefix="",
     use_cache=False,
 ):
@@ -24,6 +25,8 @@ def summarize(
             output += ".md"
     else:
         outdir = os.path.splitext(pdf_path)[0]
+        if output_suffix:
+            outdir += output_suffix
         output = outdir + ".md"
     if output_dir:
         outdir = os.path.join(output_dir, os.path.basename(outdir))
