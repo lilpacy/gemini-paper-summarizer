@@ -13,13 +13,9 @@ def summarize(
     pdf_path,
     output=None,
     output_dir=None,
-    prefix=""
+    prefix="",
+    use_cache=False,
 ):
-    model = genai.GenerativeModel(
-        model_name=model_name,
-        generation_config=generation_config,
-        system_instruction=system_instruction,
-    )
     prompts = lang_module.prompts
     sprompt = lang_module.sprompt
     if output:
@@ -33,6 +29,7 @@ def summarize(
         outdir = os.path.join(output_dir, os.path.basename(outdir))
         output = os.path.join(output_dir, os.path.basename(output))
     file = None
+    cache = None
     result = ""
     i = 0
     sections = Section()
@@ -74,10 +71,17 @@ def summarize(
                     k += 1
                 rtext = "\n".join(lines[k:]) + "\n"
             else:
-                # Upload the file
+                # Upload the file (and cache it)
                 if not file:
                     file = genai.upload_file(pdf_path, mime_type="application/pdf")
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
+                    if use_cache:
+                        print("Caching file...")
+                        cache = genai.caching.CachedContent.create(
+                            model=model_name,
+                            system_instruction=system_instruction,
+                            contents=[file],
+                        )
 
                 # Prepare the prompt
                 plines = prompt.rstrip().splitlines()
@@ -86,7 +90,17 @@ def summarize(
                 print(f"---- {prefix}Prompt {i}{plen}: {plines[0]}")
 
                 # Get the response and statistics
-                rtext, usage = gemini.generate_content(model, max_rpm, file, prompt)
+                if cache:
+                    model = genai.GenerativeModel.from_cached_content(cache)
+                    model.generation_config = generation_config
+                    rtext, usage = gemini.generate_content(model, max_rpm, prompt)
+                else:
+                    model = genai.GenerativeModel(
+                        model_name=model_name,
+                        generation_config=generation_config,
+                        system_instruction=system_instruction,
+                    )
+                    rtext, usage = gemini.generate_content(model, max_rpm, file, prompt)
 
                 # Get the section structure
                 if i == len(prompts) and "```json" in rtext:
@@ -123,6 +137,9 @@ def summarize(
                 result += "\n"
             result += title + "\n\n" + rtext
     finally:
+        if cache:
+            cache.delete()
+            print("Deleted cache")
         if file:
             genai.delete_file(file.name)
             print(f"Deleted file '{file.display_name}' from: {file.uri}")
