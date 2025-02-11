@@ -10,7 +10,7 @@ Supports output in multiple languages: Chinese, English, French, German, Japanes
 
 See the [examples](examples) directory for sample outputs, including summaries of:
 
-- [Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., … Polosukhin, I. (2017). Attention Is All You Need.](https://arxiv.org/abs/1706.03762v7)
+- [(2017) Attention Is All You Need](https://arxiv.org/abs/1706.03762v7)
 
 ### Other Summaries in Japanese
 
@@ -24,7 +24,11 @@ See the [examples](examples) directory for sample outputs, including summaries o
 - [(2022) Symbolic Knowledge Distillation: from General Language Models to Commonsense Models](https://7shi.hateblo.jp/entry/2025/02/02/114424)
 - [(2023) A Benchmark for Learning to Translate a New Language from One Grammar Book](https://7shi.hateblo.jp/entry/2025/02/02/165257)
 - [(2023) Text Embeddings Reveal (Almost) As Much As Text](https://7shi.hateblo.jp/entry/2025/01/05/203512)
+
+Meta
+
 - [(2024) Large Concept Models: Language Modeling in a Sentence Representation Space](https://7shi.hateblo.jp/entry/2025/01/04/232224)
+- [(2025) Brain-to-Text Decoding: A Non-invasive Approach via Typing](https://7shi.hateblo.jp/entry/2025/02/11/145100)
 
 DeepSeek
 
