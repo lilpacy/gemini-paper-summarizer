@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0] - 2025-02-19
+### Added
+- Support for input file formats beyond PDF
+
 ## [0.6.1] - 2025-02-08
 ### Changed
 - Updated prompts to specify only title translation
