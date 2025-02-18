@@ -73,7 +73,7 @@ The tool will generate several markdown files with different types of summaries:
 4. Individual summaries (not translations) for each main section
 5. Summaries of 1-4 above combined into a single file
 
-The output files will be named based on the input PDF filename. Files 1-4 above will be saved in a directory and numbered continuously (e.g., `paper/001.md`, `paper/002.md`, etc.). The combined file will be named `paper.md`.
+The output files will be named based on the input filename. Files 1-4 above will be saved in a directory and numbered continuously (e.g., `paper/001.md`, `paper/002.md`, etc.). The combined file will be named `paper.md`.
 
 Note: If the process is interrupted (e.g. by Ctrl+C or by a 429 rate limit error, etc.), the process can be re-run smoothly, because any existing output files will be skipped.
 
@@ -91,18 +91,18 @@ The section structure will be displayed in both JSON format and as a hierarchica
 ## Command-Line Options
 
 ```
-uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [-m MODEL] [--rpm RPM] [--suffix SUFFIX] [--ccache] [--version] pdf_paths [pdf_paths ...]
+uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}] [-m MODEL] [--rpm RPM] [--suffix SUFFIX] [--ccache] [--version] paths [paths ...]
 ```
 
-- `pdf_paths`: **Required** Path(s) to one or more PDF files to summarize
-  - Multiple PDF files can be specified
+- `paths`: **Required** Path(s) to one or more files to summarize
+  - Multiple files can be specified
   - Wildcards (`*`) are supported on Windows
 
 - `-d, --output-dir`: Optional. Specify the output directory for intermediate files
-  - Recommended when processing multiple PDF files
+  - Useful when processing multiple files
 
 - `-o, --output`: Optional. Specify the output file for the summary
-  - Can only be used with a single PDF file
+  - Can only be used with a single file
 
 - `-l, --language`: Optional. Specify the output language
   - Supported languages: `de` (German), `en` (English), `es` (Spanish), `fr` (French), `ja` (Japanese), `ko` (Korean), `zh` (Chinese)
@@ -115,10 +115,10 @@ uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}]
   - Default: 15
 
 - `--suffix`: Optional. Add custom suffix to the output filename
-  - Useful for differentiating the output filename from the source PDF
+  - Useful for differentiating the output filename from the source filename
 
 - `--ccache`: Optional. Enable context caching
-  - Caches source PDF to reduce API usage costs
+  - Caches source file to reduce API usage costs
   - Currently disabled by default as it's not supported in Gemini 2.0 Flash
 
 - `--version`: Display version information

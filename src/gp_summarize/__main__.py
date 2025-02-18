@@ -1,7 +1,7 @@
 import argparse
 from .__init__ import name, __version__
 parser = argparse.ArgumentParser(description='Summarize academic papers using Gemini API')
-parser.add_argument('pdf_paths', nargs='+', help='Path(s) to one or more PDF files')
+parser.add_argument('paths', nargs='+', help='Path(s) to one or more files')
 parser.add_argument('-d', '--output-dir', help='Output directory for intermediate files')
 parser.add_argument('-o', '--output', help='Output file for summary')
 parser.add_argument('-l', '--language', choices=['de', 'en', 'es', 'fr', 'ja', 'ko', 'zh'], default=None, help='Specify the output language')
@@ -15,13 +15,13 @@ args = parser.parse_args()
 import os
 if os.name == 'nt':  # Check if the system is Windows
     from glob import glob
-    pdf_paths = []
-    for path in args.pdf_paths:
-        pdf_paths.extend(glob(path))
+    paths = []
+    for path in args.paths:
+        paths.extend(glob(path))
 else:
-    pdf_paths = args.pdf_paths
+    paths = args.paths
 
-pdfs = len(pdf_paths)
+pdfs = len(paths)
 if args.output:
     if args.output_dir:
         parser.error("Output directory (-d) cannot be specified when an output file (-o) is provided.")
@@ -53,17 +53,17 @@ generation_config = {
 }
 
 def main():
-    for i, pdf_path in enumerate(pdf_paths, 1):
+    for i, path in enumerate(paths, 1):
         if i > 1:
             print()
-        print(f"==== PDF {i}/{pdfs}: {pdf_path}")
+        print(f"==== PDF {i}/{pdfs}: {path}")
         summary, output, stats = summarize(
             model_name,
             generation_config,
             lang_module.system_instruction,
             args.rpm,
             lang_module,
-            pdf_path,
+            path,
             args.output,
             args.output_dir,
             args.suffix,

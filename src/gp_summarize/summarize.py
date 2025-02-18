@@ -1,4 +1,4 @@
-import os, json
+import os, json, mimetypes
 import google.generativeai as genai
 
 from .section import Section
@@ -10,7 +10,7 @@ def summarize(
     system_instruction,
     max_rpm,
     lang_module,
-    pdf_path,
+    path,
     output=None,
     output_dir=None,
     output_suffix=None,
@@ -24,7 +24,7 @@ def summarize(
         if not ext:
             output += ".md"
     else:
-        outdir = os.path.splitext(pdf_path)[0]
+        outdir = os.path.splitext(path)[0]
         if output_suffix:
             outdir += output_suffix
         output = outdir + ".md"
@@ -77,7 +77,8 @@ def summarize(
             else:
                 # Upload the file (and cache it)
                 if not file:
-                    file = genai.upload_file(pdf_path, mime_type="application/pdf")
+                    mime_type = mimetypes.guess_type(path)[0] or "text/plain"
+                    file = genai.upload_file(path, mime_type=mime_type)
                     print(f"Uploaded file '{file.display_name}' as: {file.uri}")
                     if use_cache:
                         print("Caching file...")
