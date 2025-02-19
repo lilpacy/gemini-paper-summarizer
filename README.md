@@ -96,7 +96,10 @@ uv run gp_summarize [-h] [-d OUTPUT_DIR] [-o OUTPUT] [-l {de,en,es,fr,ja,ko,zh}]
 
 - `paths`: **Required** Path(s) to one or more files to summarize
   - Multiple files can be specified
+    - Each file is processed separately
+    - If you need to process them together, use an external tool to combine ([Repomix](https://repomix.com/) recommended)
   - Wildcards (`*`) are supported on Windows
+    - On POSIX systems, wildcards are processed by the shell
 
 - `-d, --output-dir`: Optional. Specify the output directory for intermediate files
   - Useful when processing multiple files
